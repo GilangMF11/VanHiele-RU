@@ -1,0 +1,44 @@
+{
+	"name": "soal-ump",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"migrate:up": "node-pg-migrate up",
+		"migrate:down": "node-pg-migrate down",
+		"migrate:create": "node-pg-migrate create",
+		"db:reset": "node-pg-migrate down && node-pg-migrate up",
+		"convert-images": "tsx scripts/convertBase64ToFiles.ts"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^6.0.0",
+		"@sveltejs/kit": "^2.22.0",
+		"@sveltejs/vite-plugin-svelte": "^6.0.0",
+		"@tailwindcss/forms": "^0.5.10",
+		"@types/bcrypt": "^6.0.0",
+		"@types/cookie": "^0.6.0",
+		"@types/jsonwebtoken": "^9.0.10",
+		"@types/node": "^24.1.0",
+		"autoprefixer": "^10.4.21",
+		"node-pg-migrate": "^8.0.3",
+		"postcss": "^8.5.6",
+		"svelte": "^5.0.0",
+		"svelte-check": "^4.0.0",
+		"tailwindcss": "^4.1.11",
+		"tsx": "^4.20.3",
+		"typescript": "^5.8.3",
+		"vite": "^7.0.4"
+	},
+	"dependencies": {
+		"@types/pg": "^8.15.5",
+		"bcrypt": "^6.0.0",
+		"dotenv": "^17.2.1",
+		"jsonwebtoken": "^9.0.2",
+		"pg": "^8.16.3"
+	}
+}

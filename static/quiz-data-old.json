@@ -1,0 +1,365 @@
+{
+    "quiz_config": {
+      "title": "UMP Quiz System",
+      "description": "Sistem Quiz Ujian Masuk Perguruan Tinggi",
+      "total_levels": 5,
+      "max_mistakes_per_level": 2
+    },
+    "levels": {
+      "1": {
+        "level_name": "Level 1 - Dasar",
+        "description": "Soal tingkat dasar",
+        "questions": [
+          {
+            "id": "L1Q1",
+            "question": "Apa yang dimaksud dengan fotosintesis?",
+            "image": null,
+            "options": {
+              "a": "Proses pemecahan glukosa menjadi energi",
+              "b": "Proses pembentukan glukosa menggunakan cahaya matahari", 
+              "c": "Proses respirasi pada tumbuhan",
+              "d": "Proses penyerapan air oleh akar"
+            },
+            "correct_answer": "b",
+            "explanation": "Fotosintesis adalah proses pembentukan glukosa dari CO2 dan H2O dengan bantuan cahaya matahari."
+          },
+          {
+            "id": "L1Q2", 
+            "question": "Organel yang berperan dalam respirasi seluler adalah?",
+            "image": null,
+            "options": {
+              "a": "Nukleus",
+              "b": "Mitokondria",
+              "c": "Ribosom", 
+              "d": "Kloroplas"
+            },
+            "correct_answer": "b",
+            "explanation": "Mitokondria adalah organel yang berperan dalam respirasi seluler untuk menghasilkan ATP."
+          },
+          {
+            "id": "L1Q3",
+            "question": "Rumus kimia air adalah?",
+            "image": null,
+            "options": {
+              "a": "H2O",
+              "b": "CO2",
+              "c": "O2",
+              "d": "H2SO4"
+            },
+            "correct_answer": "a", 
+            "explanation": "Air memiliki rumus kimia H2O yang terdiri dari 2 atom hidrogen dan 1 atom oksigen."
+          },
+          {
+            "id": "L1Q4",
+            "question": "Planet terdekat dengan matahari adalah?",
+            "image": null,
+            "options": {
+              "a": "Venus",
+              "b": "Bumi", 
+              "c": "Merkurius",
+              "d": "Mars"
+            },
+            "correct_answer": "c",
+            "explanation": "Merkurius adalah planet yang paling dekat dengan matahari dalam tata surya kita."
+          },
+          {
+            "id": "L1Q5",
+            "question": "Satuan dasar untuk mengukur panjang dalam SI adalah?",
+            "image": null,
+            "options": {
+              "a": "Kilogram",
+              "b": "Meter",
+              "c": "Sekon",
+              "d": "Ampere"
+            },
+            "correct_answer": "b",
+            "explanation": "Meter adalah satuan dasar untuk mengukur panjang dalam sistem internasional (SI)."
+          }
+        ]
+      },
+      "2": {
+        "level_name": "Level 2 - Menengah",
+        "description": "Soal tingkat menengah",
+        "questions": [
+          {
+            "id": "L2Q1",
+            "question": "Proses yang terjadi pada fase G1 dalam siklus sel adalah?",
+            "image": null,
+            "options": {
+              "a": "Replikasi DNA",
+              "b": "Pembelahan inti",
+              "c": "Pertumbuhan sel dan sintesis protein",
+              "d": "Kondensasi kromosom"
+            },
+            "correct_answer": "c",
+            "explanation": "Fase G1 adalah fase pertumbuhan sel dimana terjadi sintesis protein dan pertumbuhan ukuran sel."
+          },
+          {
+            "id": "L2Q2",
+            "question": "Enzim yang berperan dalam pencernaan protein adalah?",
+            "image": null,
+            "options": {
+              "a": "Amilase",
+              "b": "Lipase", 
+              "c": "Pepsin",
+              "d": "Sukrase"
+            },
+            "correct_answer": "c",
+            "explanation": "Pepsin adalah enzim yang diproduksi lambung untuk mencerna protein menjadi peptida."
+          },
+          {
+            "id": "L2Q3",
+            "question": "Hukum Newton I menyatakan bahwa?",
+            "image": null,
+            "options": {
+              "a": "F = ma",
+              "b": "Benda diam akan tetap diam jika tidak ada gaya",
+              "c": "Aksi = Reaksi",
+              "d": "Energi tidak dapat diciptakan atau dimusnahkan"
+            },
+            "correct_answer": "b",
+            "explanation": "Hukum Newton I (hukum inersia) menyatakan bahwa benda akan mempertahankan keadaannya jika tidak ada gaya yang bekerja."
+          },
+          {
+            "id": "L2Q4",
+            "question": "Bentuk ikatan kimia pada senyawa NaCl adalah?",
+            "image": null,
+            "options": {
+              "a": "Ikatan kovalen",
+              "b": "Ikatan ionik",
+              "c": "Ikatan hidrogen",
+              "d": "Ikatan metalik"
+            },
+            "correct_answer": "b",
+            "explanation": "NaCl (garam dapur) terbentuk melalui ikatan ionik antara ion Na+ dan Cl-."
+          },
+          {
+            "id": "L2Q5",
+            "question": "Bagian mata yang berfungsi mengatur jumlah cahaya yang masuk adalah?",
+            "image": null,
+            "options": {
+              "a": "Kornea",
+              "b": "Lensa",
+              "c": "Iris",
+              "d": "Retina"
+            },
+            "correct_answer": "c",
+            "explanation": "Iris adalah bagian mata yang mengatur diameter pupil untuk mengontrol jumlah cahaya yang masuk."
+          }
+        ]
+      },
+      "3": {
+        "level_name": "Level 3 - Lanjutan",
+        "description": "Soal tingkat lanjutan",
+        "questions": [
+          {
+            "id": "L3Q1",
+            "question": "Pada reaksi redoks, zat yang mengalami reduksi adalah?",
+            "image": null,
+            "options": {
+              "a": "Zat yang melepas elektron",
+              "b": "Zat yang menerima elektron",
+              "c": "Zat yang melepas proton",
+              "d": "Zat yang menerima proton"
+            },
+            "correct_answer": "b",
+            "explanation": "Reduksi adalah proses penerimaan elektron, sedangkan oksidasi adalah pelepasan elektron."
+          },
+          {
+            "id": "L3Q2",
+            "question": "Teori evolusi dikemukakan pertama kali oleh?",
+            "image": null,
+            "options": {
+              "a": "Gregor Mendel",
+              "b": "Charles Darwin",
+              "c": "Louis Pasteur", 
+              "d": "Alexander Fleming"
+            },
+            "correct_answer": "b",
+            "explanation": "Charles Darwin mengemukakan teori evolusi melalui seleksi alam dalam bukunya 'On the Origin of Species'."
+          },
+          {
+            "id": "L3Q3",
+            "question": "Nilai sin 30° adalah?",
+            "image": null,
+            "options": {
+              "a": "1/2",
+              "b": "√2/2",
+              "c": "√3/2",
+              "d": "1"
+            },
+            "correct_answer": "a",
+            "explanation": "Nilai sin 30° = 1/2, ini adalah nilai trigonometri dasar yang harus dihapal."
+          },
+          {
+            "id": "L3Q4",
+            "question": "Proses pembentukan urin terjadi di?",
+            "image": null,
+            "options": {
+              "a": "Hati",
+              "b": "Paru-paru",
+              "c": "Ginjal",
+              "d": "Jantung"
+            },
+            "correct_answer": "c",
+            "explanation": "Ginjal adalah organ yang berperan dalam filtrasi darah dan pembentukan urin."
+          },
+          {
+            "id": "L3Q5",
+            "question": "Gas yang paling banyak di atmosfer adalah?",
+            "image": null,
+            "options": {
+              "a": "Oksigen (O2)",
+              "b": "Karbon dioksida (CO2)",
+              "c": "Nitrogen (N2)",
+              "d": "Argon (Ar)"
+            },
+            "correct_answer": "c",
+            "explanation": "Nitrogen (N2) merupakan sekitar 78% dari komposisi atmosfer bumi."
+          }
+        ]
+      },
+      "4": {
+        "level_name": "Level 4 - Mahir",
+        "description": "Soal tingkat mahir",
+        "questions": [
+          {
+            "id": "L4Q1",
+            "question": "Persamaan kuadrat x² - 5x + 6 = 0 memiliki akar-akar?",
+            "image": null,
+            "options": {
+              "a": "x = 2 dan x = 3",
+              "b": "x = 1 dan x = 6",
+              "c": "x = -2 dan x = -3",
+              "d": "x = 2 dan x = -3"
+            },
+            "correct_answer": "a",
+            "explanation": "Dengan memfaktorkan: (x-2)(x-3) = 0, sehingga x = 2 atau x = 3."
+          },
+          {
+            "id": "L4Q2",
+            "question": "Dalam genetika, genotipe heterozigot untuk sifat tinggi (T) dan pendek (t) adalah?",
+            "image": null,
+            "options": {
+              "a": "TT",
+              "b": "tt",
+              "c": "Tt",
+              "d": "tT"
+            },
+            "correct_answer": "c",
+            "explanation": "Heterozigot berarti memiliki dua alel yang berbeda untuk satu sifat, yaitu Tt."
+          },
+          {
+            "id": "L4Q3",
+            "question": "Rumus untuk menghitung energi kinetik adalah?",
+            "image": null,
+            "options": {
+              "a": "Ek = mgh",
+              "b": "Ek = ½mv²",
+              "c": "Ek = mc²",
+              "d": "Ek = Pt"
+            },
+            "correct_answer": "b",
+            "explanation": "Energi kinetik dihitung dengan rumus Ek = ½mv² dimana m adalah massa dan v adalah kecepatan."
+          },
+          {
+            "id": "L4Q4",
+            "question": "pH larutan yang memiliki konsentrasi H+ = 10⁻³ M adalah?",
+            "image": null,
+            "options": {
+              "a": "3",
+              "b": "11",
+              "c": "-3",
+              "d": "7"
+            },
+            "correct_answer": "a",
+            "explanation": "pH = -log[H+] = -log(10⁻³) = 3."
+          },
+          {
+            "id": "L4Q5",
+            "question": "Hormon yang mengatur kadar gula darah adalah?",
+            "image": null,
+            "options": {
+              "a": "Tiroksin",
+              "b": "Insulin",
+              "c": "Adrenalin",
+              "d": "Kortisol"
+            },
+            "correct_answer": "b",
+            "explanation": "Insulin adalah hormon yang diproduksi pankreas untuk menurunkan kadar gula darah."
+          }
+        ]
+      },
+      "5": {
+        "level_name": "Level 5 - Expert",
+        "description": "Soal tingkat expert",
+        "questions": [
+          {
+            "id": "L5Q1",
+            "question": "Integral dari ∫2x dx adalah?",
+            "image": null,
+            "options": {
+              "a": "x² + C",
+              "b": "2x² + C", 
+              "c": "x²/2 + C",
+              "d": "2x + C"
+            },
+            "correct_answer": "a",
+            "explanation": "∫2x dx = 2∫x dx = 2 · x²/2 + C = x² + C."
+          },
+          {
+            "id": "L5Q2",
+            "question": "Proses transkripsi dalam sintesis protein terjadi di?",
+            "image": null,
+            "options": {
+              "a": "Ribosom",
+              "b": "Sitoplasma",
+              "c": "Nukleus",
+              "d": "Mitokondria"
+            },
+            "correct_answer": "c",
+            "explanation": "Transkripsi adalah proses pembentukan mRNA dari DNA yang terjadi di nukleus."
+          },
+          {
+            "id": "L5Q3",
+            "question": "Hukum kekekalan momentum berlaku pada?",
+            "image": null,
+            "options": {
+              "a": "Sistem terbuka saja",
+              "b": "Sistem tertutup tanpa gaya luar",
+              "c": "Sistem dengan gesekan",
+              "d": "Sistem dengan gaya gravitasi"
+            },
+            "correct_answer": "b",
+            "explanation": "Hukum kekekalan momentum berlaku pada sistem tertutup dimana tidak ada gaya luar yang bekerja."
+          },
+          {
+            "id": "L5Q4",
+            "question": "Konfigurasi elektron atom Natrium (Z=11) adalah?",
+            "image": null,
+            "options": {
+              "a": "1s² 2s² 2p⁶ 3s¹",
+              "b": "1s² 2s² 2p⁶ 3s²",
+              "c": "1s² 2s² 2p⁵ 3s²",
+              "d": "1s² 2s² 2p⁶ 3p¹"
+            },
+            "correct_answer": "a",
+            "explanation": "Natrium memiliki 11 elektron: 2 di 1s, 2 di 2s, 6 di 2p, dan 1 di 3s."
+          },
+          {
+            "id": "L5Q5",
+            "question": "Proses meiosis menghasilkan sel dengan jumlah kromosom?",
+            "image": null,
+            "options": {
+              "a": "Diploid (2n)",
+              "b": "Haploid (n)",
+              "c": "Triploid (3n)",
+              "d": "Tetraploid (4n)"
+            },
+            "correct_answer": "b",
+            "explanation": "Meiosis adalah pembelahan reduksi yang menghasilkan sel gamet dengan jumlah kromosom haploid (n)."
+          }
+        ]
+      }
+    }
+  }

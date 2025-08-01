@@ -1,0 +1,441 @@
+{
+    "quiz_config": {
+      "title": "VanHiele.RU",
+      "description": "Sistem Quiz Ujian Masuk Perguruan Tinggi",
+      "total_levels": 5,
+      "max_mistakes_per_level": 2,
+      "image_base_url" : "/images/"
+    },
+    "levels": {
+      "0": {
+        "level_name": "Level 0 - Visualisasi",
+        "description": "Peserta didik mengenali bentuk geometri berdasarkan penampakannya saja. Hanya mampu menyebutkan nama berdasarkan gambar geometri yang terlihat secara global, tanpa mengidentifikasi dengan detail sifat-sifanya. Mampu menentukan jenis bangun geometri berdasarkan presepsi yang sudah dibangun selama ini, bukan berdasarkan penalaran atau pemahamannya.",
+        "questions": [
+          {
+            "id": "L0Q1",
+            "question": "Bangun di atas yang merupakan segitiga adalah ...",
+            "image": "level0/L0Q1.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Hanya A",
+              "b": "B dan C", 
+              "c": "B dan D",
+              "d": "B, C, dan D",
+              "e": "Semua merupakan segitiga"
+            },
+            "correct_answer": "c",
+            "explanation": ""
+          },
+          {
+            "id": "L0Q2", 
+            "question": "Bangun di atas yang merupakan persegi adalah …",
+            "image": "level0/L0Q2.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Hanya X",
+              "b": "Hanya Y",
+              "c": "Hanya Z", 
+              "d": "Y dan Z",
+              "e": "Tidak ada satupun"
+            },
+            "correct_answer": "c",
+            "explanation": ""
+          },
+          {
+            "id": "L0Q3",
+            "question": "Bangun di atas yang merupakan persegi panjang adalah ...",
+            "image": "level0/L0Q3.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "A dan B",
+              "b": "A dan C",
+              "c": "Hanya B",
+              "d": "Hanya A",
+              "e": "Hanya C"
+            },
+            "correct_answer": "a", 
+            "explanation": ""
+          },
+          {
+            "id": "L0Q4",
+            "question": "Bangun di atas yang bukan persegi adalah …",
+            "image": "level0/L0Q4.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Semua bangun di atas bukan persegi",
+              "b": "L, M, dan N", 
+              "c": "M dan N",
+              "d": "Hanya N",
+              "e": "Semua bangun di atas persegi"
+            },
+            "correct_answer": "c",
+            "explanation": ""
+          },
+          {
+            "id": "L0Q5",
+            "question": "Bangun di atas yang merupakan jajargenjang adalah …",
+            "image": "level0/L0Q5.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Tidak ada satupun bangun di atas jajargenjang",
+              "b": "Hanya R", 
+              "c": "Hanya S",
+              "d": "Hanya T",
+              "e": "Semua bangun di atas jajargenjang"
+            },
+            "correct_answer": "e",
+            "explanation": ""
+          },
+          {
+            "id": "L0Q6",
+            "question": "Pernyataan di bawah ini yang sesuai gambar di atas adalah …",
+            "image": "level0/L0Q6.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Tidak satupun bangun di atas trapesium",
+              "b": "Hanya E yang merupakan trapesium",
+              "c": "Hanya E dan G yang merupakan trapesium",
+              "d": "Hanya E, F dan G yang merupakan trapesium",
+              "e": "Semua bangun di atas adalah trapesium"
+            },
+            "correct_answer": "e",
+            "explanation": ""
+          },
+          {
+            "id": "L0Q7",
+            "question": "Gambar yang merupakan prisma adalah …",
+            "image": "level0/L0Q7.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Semua bangun di atas adalah prisma",
+              "b": "Hanya P, Q, dan S",
+              "c": "Hanya Q dan R",
+              "d": "Hanya P dan S",
+              "e": "Hanya Q"
+            },
+            "correct_answer": "b",
+            "explanation": ""
+          },
+          {
+            "id": "L0Q8",
+            "question": "Gambar yang bukan limas adalah …",
+            "image": "level0/L0Q8.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Hanya L, M, dan N",
+              "b": "Hanya M dan N",
+              "c": "Hanya M",
+              "d": "Hanya N",
+              "e": "Semuanya bukan limas"
+            },
+            "correct_answer": "a",
+            "explanation": ""
+          }
+        ]
+      },
+      "1": {
+        "level_name": "Level 1 - Analisis",
+        "description": "Soal tingkat menengah",
+        "questions": [
+          {
+            "id": "L1Q1",
+            "question": "Pernyataan yang tepat tentang persegi PQRS di diatas adalah …",
+            "image": "level1/L1Q1.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "𝑃𝑄 dan 𝑆𝑄 sama Panjang",
+              "b": "𝑷𝑹 dan 𝑺𝑸 tegak lurus",
+              "c": "Terdapat empat sudut siku-siku",
+              "d": "𝑃𝑂 lebih panjang dibanding 𝑆𝑂",
+              "e": "∠𝑆𝑃𝑄 lebih besar dibandingkan ∠𝑆𝑂𝑄"
+            },
+            "correct_answer": "b",
+            "explanation": ""
+          },
+          {
+            "id": "L1Q2",
+            "question": "Pernyataan yang tidak tepat tentang persegi panjang KLMN di atas adalah …",
+            "image": "level1/L1Q2.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Terdapat empat sudut siku-siku",
+              "b": "Terdapat empat sisi yang saling tegak lurus",
+              "c": "Diagonal saling berpotongan membagi dua sama panjang",
+              "d": "Terdapat dua pasang sisi berhadapan sama panjang",
+              "e": "Diagonal berpotogan tegak lurus"
+            },
+            "correct_answer": "e",
+            "explanation": ""
+          },
+          {
+            "id": "L1Q3",
+            "question": "Berikut pernyataan yang tepat tentang trapesium adalah …",
+            "image": "level1/L1Q3.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Semua trapesium pasti memiliki sudut siku-siku",
+              "b": "Pajang salah satu sisi trapesium selalu dua kali panjang sisi yang lain",
+              "c": "Diagonal trapesium sama panjang",
+              "d": "Memiliki sudut sepasang sudut yang sama besar",
+              "e": "Tidak ada satupun yang sesuai tentang trapesium"
+            },
+            "correct_answer": "e",
+            "explanation": ""
+          },
+          {
+            "id": "L1Q4",
+            "question": "Berikut pernyataan yang tidak tepat tentang belah ketupat adalah …",
+            "image": "level1/L1Q4.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Kedua diagonalnya saling membagi dua sama panjang",
+              "b": "Kedua diagonalnya berpotongan tegak lurus",
+              "c": "Kedua diagonalnya sama panjang",
+              "d": "Sudut yang berhadapan sama besar",
+              "e": "Sisi yang berhadapan sama panjang"
+            },
+            "correct_answer": "c",
+            "explanation": ""
+          },
+          {
+            "id": "L1Q5",
+            "question": "Berikut yang sesuai dengan segitiga sama kaki adalah …",
+            "image": "level1/L1Q5.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Terdapat tiga sisi yang sama panjang",
+              "b": "Satu sisi harus memiliki panjang dua kali panjang sisi yang lain",
+              "c": "Ada setidaknya dua sudut yang sama besar",
+              "d": "Harus memiliki dua sudut yang sama besar",
+              "e": "Tidak ada dari pernyataan di atas yang sesuai dengan segitiga sama kaki"
+            },
+            "correct_answer": "c",
+            "explanation": ""
+          },
+          {
+            "id": "L1Q6",
+            "question": "",
+            "image": "level1/L1Q6.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Diagonalnya saling berpotongan tegak lurus",
+              "b": "Diagonalnya saling berpotongan tegak lurus sama panjang",
+              "c": "Sudut-sudut yang berhadapan sama besar",
+              "d": "Jumlah sudut yang berhadapat 180o",
+              "e": "Sisi"
+            },
+            "correct_answer": "a",
+            "explanation": ""
+          },
+          {
+            "id": "L1Q7",
+            "question": "Berdasarkan gambar di atas, pernyataan di bawah ini yang tidak selalu tepat adalah …",
+            "image": "level1/L1Q7.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "PQRS selalu memiliki dua pasang sisi yang sama panjang.",
+              "b": "PQRS minimal memiliki dua pasang sudut yang sama besar.",
+              "c": "Garis 𝑃𝑅 dan 𝑄𝑆 selalu tegak lurus",
+              "d": "Besar ∠𝑸 dan ∠𝑺 selalu sama",
+              "e": "Besar ∠𝑃 dan ∠𝑅 selalu sama"
+            },
+            "correct_answer": "d",
+            "explanation": ""
+          }
+        ]
+      },
+      "2": {
+        "level_name": "Level 2 - Abstraksi atau Deduksi Informal",
+        "description": "Soal tingkat lanjutan",
+        "questions": [
+          {
+            "id": "L2Q1",
+            "question": "Berikut yang tepat berdasarkan pernyataan di atas adalah …",
+            "image": "level2/L2Q1.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Jika pernyataan 1 benar, maka pernyataan 2 benar",
+              "b": "Jika pernyataan 1 salah, maka pernyataan 2 benar",
+              "c": "Pernyataan 1 dan 2 tidak mungkin keduanya benar",
+              "d": "Pernyataan 1 dan 2 tidak mungkin keduanya salah",
+              "e": "Tidak ada satupun yang benar dari pernyataan di atas"
+            },
+            "correct_answer": "b",
+            "explanation": ""
+          },
+          {
+            "id": "L2Q2",
+            "question": "Berikut yang tepat berdasarkan pernyataan di atas adalah …",
+            "image": "level2/L2Q2.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Pernyataan P dan Q tidak mungkin keduanya benar",
+              "b": "Jika P benar, maka Q benar",
+              "c": "Jika Q benar, maka P benar",
+              "d": "Jika P salah, maka T salah",
+              "e": "Tidak ada satupun dari pernyataan di atas yang benar."
+            },
+            "correct_answer": "b",
+            "explanation": ""
+          },
+          {
+            "id": "L2Q3",
+            "question": "Gambar yang merupakan persegi panjang adalah …",
+            "image": "level2/L2Q3.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Semua adalah persegi panjang",
+              "b": "Hanya R, T, dan U",
+              "c": "Hanya R dan U",
+              "d": "Hanya R",
+              "e": "Tidak ada satupun persegi panjang"
+            },
+            "correct_answer": "a",
+            "explanation": ""
+          },
+          {
+            "id": "L2Q4",
+            "question": "Perhatikan pernyataan-pernyataan berikut.\n1. Jika suatu bangun adalah persegi, maka bangun tersebut pasti belah ketupat.\n2. Semua persegi pasti persegi panjang.\n3. Beberapa jajargenjang pasti persegi panjang.\n4. Semua jajargenjang punya diagonal yang kongruen.\n5. Jika sebuah bangun mempunyai dua sumbu simetri, pasti bangun tersebut adalah segiempat.\nPertanyaan yang tidak tepat adalah ..",
+            "image": null,
+            "image_alt": null,
+            "options": {
+              "a": "Hanya pernyataan 5",
+              "b": "Pertanyaan 4 dan 5",
+              "c": "Pernyataan 3, 4, dan 5",
+              "d": "Pernyataan 2, 3, 4 dan 5",
+              "e": "Semua Pernyataan diatas tidak tepat"
+            },
+            "correct_answer": "b",
+            "explanation": ""
+          },
+          {
+            "id": "L2Q5",
+            "question": "Pernyataan berikut, sifat yang dimiliki oleh persegi panjang tetapi tidak dimiliki oleh jajargenjang adalah ...",
+            "image": null,
+            "image_alt": null,
+            "options": {
+              "a": "Sisi yang berhadapan sama panjang",
+              "b": "Diagonalnya sama panjang",
+              "c": "Sisi yang berhadapan sejajar",
+              "d": "Sudut yang berhadapan sama besar",
+              "e": "Diagonalnya salng berpotongan sama panjang"
+            },
+            "correct_answer": "b",
+            "explanation": ""
+          },
+          {
+            "id": "L2Q6",
+            "question": "Pernyataan berikut yang tepat adalah …",
+            "image": null,
+            "image_alt": null,
+            "options": {
+              "a": "Semua sifat persegi panjang adalah sifat persegi",
+              "b": "Semua sifat persegi adalah sifat persegi panjang",
+              "c": "Semua sifat persegi panjang adalah sifat jajargenjang",
+              "d": "Semua sifat persegi adalah sifat jajargenjang",
+              "e": "Semua sifat jajargenjang adalah sifat trapesium"
+            },
+            "correct_answer": "a",
+            "explanation": ""
+          },
+          {
+            "id": "L2Q7",
+            "question": "Perhatikan pernyataan-pernyataan berikut.\n1. Jika sebuah bangun itu tabung, pasti bangun tersebut adalah prisma.\n2. Semua prisma memiliki minimal satu pasang bidang simetri.\n3. Semua prisma yang beralaskan persegi, pasti kubus.\n4. Semua kerucut adalah limas.\nPernyataan di atas yang tidak tepat adalah …",
+            "image": null,
+            "image_alt": null,
+            "options": {
+              "a": "Pernyataan 1",
+              "b": "Pernyataan 1 dan 2",
+              "c": "Pernyataan 1 dan 3",
+              "d": "Pernyataan 1, 2 dan 3",
+              "e": "Tidak ada pernyataan yang tidak tepat."
+            },
+            "correct_answer": "e",
+            "explanation": ""
+          }
+        ]
+      },
+      "3": {
+        "level_name": "Level 3 - Deduksi",
+        "description": "Soal tingkat mahir",
+        "questions": [
+          {
+            "id": "L3Q1",
+            "question": "Perhatikan tiga pernyataan berikut.\n1. Dua garis, tegak lurus pada garis yang sama, maka kedua garis tersebut sejajar.\n2. Sebuah garis tegak lurus pada suatu garis yang sejajar dengan garis lain, maka garis tersebut tegak lurus dengan keduanya.\n3. Jika dua buah garis jaraknya sama di setiap titik, maka dua garis tersebut sejajar.\n\n Berdasarkan sifat-sifat di atas, alasan paling tepat untuk membuktikan bahwa garis m dan n sejajar adalah …",
+            "image": "level3/L3Q1.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Hanya pernyataan 1",
+              "b": "Hanya pernyataan 2",
+              "c": "Hanya pernyataan 3",
+              "d": "Pernyataan 1 atau 2",
+              "e": "Pernyataan 2 atau 3"
+            },
+            "correct_answer": "a",
+            "explanation": ""
+          },
+          {
+            "id": "L3Q2",
+            "question": "Perhatikan dua pernyataan berikut.\n1. Jika suatu bangun persegi panjang, maka diagonalnya saling membagi dua sama panjang\n2. Jika diagonal saling membagi dua sama panjang, maka bangun tersebut persegi panjang\n\nBerdasarkan penyataan di atas, berikut yang tepat adalah …",
+            "image": null,
+            "image_alt": null,
+            "options": {
+              "a": "Untuk membuktikan pernyataan 1 benar, cukup dengan membuktikan pernyataan 2 benar",
+              "b": "Untuk membuktikan pernyataan 2 benar, cukup dengan membuktikan pernyataan 1 benar",
+              "c": "Untuk membuktikan pernyataan 2 benar, cukup dengan menemukan satu persegi panjang yang diagonalnya saling membagi dua sama panjang",
+              "d": "Untuk membuktikan pernyataan 2 salah, cukup dengan menemukan satu bangun selain persegi panjang yang diagonalnya saling membagi dua sama panjang",
+              "e": "Tidak ada satupun pernyataan di atas yang benar."
+            },
+            "correct_answer": "d",
+            "explanation": ""
+          },
+          {
+            "id": "L3Q3",
+            "question": "Berdasarkan gambar di atas, pernyataan berikut yang tepat adalah…",
+            "image": "level3/L3Q3.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Segitiga I lebih luas dibandingkan segitiga II",
+              "b": "Segitiga III lebih luas dibandingkan segitiga I",
+              "c": "Segitia III luasnya paling kecil dibandingkan yang lain",
+              "d": "Baik segitiga I, II, dan III luasnya sama",
+              "e": "Tidak ada pernyataan di atas yang tepat"
+            },
+            "correct_answer": "d",
+            "explanation": ""
+          },
+          {
+            "id": "L3Q4",
+            "question": "Berdasarkan informasi di atas, dapat ditunjukkan bahwa ruas garis 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 berpotongan di satu titik. Dari pernyataan berikut, bukti yang sesuai adalah ...",
+            "image": "level3/L3Q4.png",
+            "image_alt": "Gambar",
+            "options": {
+              "a": "Hanya pada segitiga siku-siku seperti di atas, diperoleh bahwa 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 berpotongan di satu titik",
+              "b": "Tidak semua segitiga siku-siku dapat diperoleh bahwa 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 berpotongan di satu titik",
+              "c": "Pada setiap segitiga siku-siku, dapat diperoleh bahwa 𝑩𝑸 , 𝑨𝑹 , dan 𝑷𝑪 berpotongan di satu titik",
+              "d": "Pada setiap segitiga, dapat diperoleh bahwa 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 berpotongan di satu titik",
+              "e": "Pada setiap segitiga sama sisi, 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 pasti berpotongan di satu titik"
+            },
+            "correct_answer": "c",
+            "explanation": ""
+          },
+          {
+            "id": "L3Q5",
+            "question": "Perhatikan sifaf-sifat bangun datar.\n1. P adalah bangun datar dengan diagonal sama panjang\n2. S adalah persegi\n3. R adalah persegi panjang.\n\nPernyataan berikut yang tepat adalah ..",
+            "image": null,
+            "image_alt": null,
+            "options": {
+              "a": "Jika P maka S",
+              "b": "Jika P maka R",
+              "c": "Jika R maka P",
+              "d": "Jika R dan S, maka P",
+              "e": "Tidak ada satupun pernyataan di atas yang tepat."
+            },
+            "correct_answer": "d",
+            "explanation": ""
+          }
+        ]
+      }
+      
+    }
+  }
