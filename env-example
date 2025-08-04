@@ -1,0 +1,8 @@
+# .env
+DATABASE_URL=postgresql://postgres:123456@localhost:5432/ump_quiz_system
+DB_USER=postgres
+DB_PASSWORD=123456
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=ump_quiz_system
+JWT_SECRET=66d55d81150fa152424d541234343140
