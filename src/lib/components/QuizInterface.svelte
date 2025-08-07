@@ -25,7 +25,7 @@
   let imageLoading: boolean = false;
   let imageError: boolean = false;
 
-  let level: number = 0; // Start from level 0
+  let level: number = 0;
   let questionIndex: number = 0;
   let mistakes: number = 0;
   let user: UserData = { name: "", class: "", school: "", token: "" };
@@ -36,102 +36,65 @@
   wrongCount.subscribe((value: number) => (mistakes = value));
   userData.subscribe((value: UserData) => (user = value));
 
-  function processMathSymbols(text: string): string {
-    if (!text) return "";
+  // ✅ FUNCTION UTAMA - HANDLE SEMUA HTML + MATH SYMBOLS + BOLD WORDS
+  function processQuestionWithHTML(text: string): string {
+    if (!text) return '';
 
-    return (
-      text
-        // Convert Unicode math symbols ke italic
-        .replace(/𝑃/g, '<span class="math-italic">P</span>')
-        .replace(/𝑄/g, '<span class="math-italic">Q</span>')
-        .replace(/𝑅/g, '<span class="math-italic">R</span>')
-        .replace(/𝑆/g, '<span class="math-italic">S</span>')
-        .replace(/𝑂/g, '<span class="math-italic">O</span>')
-        .replace(/𝐴/g, '<span class="math-italic">A</span>')
-        .replace(/𝐵/g, '<span class="math-italic">B</span>')
-        .replace(/𝐶/g, '<span class="math-italic">C</span>')
-        .replace(/𝐷/g, '<span class="math-italic">D</span>')
-        .replace(/𝐸/g, '<span class="math-italic">E</span>')
-        .replace(/𝐹/g, '<span class="math-italic">F</span>')
-        .replace(/𝐺/g, '<span class="math-italic">G</span>')
-        .replace(/𝐻/g, '<span class="math-italic">H</span>')
-        .replace(/𝐾/g, '<span class="math-italic">K</span>')
-        .replace(/𝐿/g, '<span class="math-italic">L</span>')
-        .replace(/𝑀/g, '<span class="math-italic">M</span>')
-        .replace(/𝑁/g, '<span class="math-italic">N</span>')
-        .replace(/𝑇/g, '<span class="math-italic">T</span>')
-        .replace(/𝑈/g, '<span class="math-italic">U</span>')
-        .replace(/𝑉/g, '<span class="math-italic">V</span>')
-        .replace(/𝑊/g, '<span class="math-italic">W</span>')
-        .replace(/𝑋/g, '<span class="math-italic">X</span>')
-        .replace(/𝑌/g, '<span class="math-italic">Y</span>')
-        .replace(/𝑍/g, '<span class="math-italic">Z</span>')
-        // Math symbols
-        .replace(/∠/g, '<span class="math-symbol">∠</span>')
-        // Auto-detect ruas garis (2-3 huruf kapital berurutan) dan tambahkan overline
-        .replace(/\b([A-Z]{2,3})\b/g, '<span class="overline">$1</span>')
-        // Khusus untuk degree symbol
-        .replace(/180o/g, "180°")
-        .replace(/(\d+)o/g, "$1°")
-    );
-  }
+    const boldWords = ['bukan', 'tidak', 'tepat', 'sesuai'];
 
-  function processAllMathNotation(
-    text: string,
-  ): Array<{ text?: string; html?: string; bold?: boolean; isHtml?: boolean }> {
-    if (!text) return [];
-
-    // Proses symbols matematika dulu
-    let processedText = processMathSymbols(text);
-
-    // Kemudian highlight kata-kata penting
-    const boldWords = ["bukan", "tidak", "tepat", "sesuai"];
-
-    // Split berdasarkan HTML tags untuk mempertahankan markup
-    const parts = processedText.split(/(<[^>]*>.*?<\/[^>]*>|<[^>]*\/>)/);
-
-    let result = [];
-
-    for (let part of parts) {
-      if (part.includes("<span")) {
-        // Ini adalah HTML tag dengan content
-        result.push({ html: part, isHtml: true });
-      } else if (part.trim()) {
-        // Ini adalah teks biasa, proses untuk bold words
-        const words = part.split(/(\s+)/);
-        for (let word of words) {
-          if (word.match(/\s+/)) {
-            result.push({ text: word, bold: false });
-          } else if (word.trim()) {
-            result.push({
-              text: word,
-              bold: boldWords.includes(word.toLowerCase()),
-            });
-          }
+    // 1. Process math symbols first
+    let processedText = text
+      .replace(/𝑃/g, '<span class="math-italic">P</span>')
+      .replace(/𝑄/g, '<span class="math-italic">Q</span>')
+      .replace(/𝑅/g, '<span class="math-italic">R</span>')
+      .replace(/𝑆/g, '<span class="math-italic">S</span>')
+      .replace(/𝑂/g, '<span class="math-italic">O</span>')
+      .replace(/𝐴/g, '<span class="math-italic">A</span>')
+      .replace(/𝐵/g, '<span class="math-italic">B</span>')
+      .replace(/𝐶/g, '<span class="math-italic">C</span>')
+      .replace(/𝐷/g, '<span class="math-italic">D</span>')
+      .replace(/𝐸/g, '<span class="math-italic">E</span>')
+      .replace(/𝐹/g, '<span class="math-italic">F</span>')
+      .replace(/𝐺/g, '<span class="math-italic">G</span>')
+      .replace(/𝐻/g, '<span class="math-italic">H</span>')
+      .replace(/𝐾/g, '<span class="math-italic">K</span>')
+      .replace(/𝐿/g, '<span class="math-italic">L</span>')
+      .replace(/𝑀/g, '<span class="math-italic">M</span>')
+      .replace(/𝑁/g, '<span class="math-italic">N</span>')
+      .replace(/𝑇/g, '<span class="math-italic">T</span>')
+      .replace(/𝑈/g, '<span class="math-italic">U</span>')
+      .replace(/𝑉/g, '<span class="math-italic">V</span>')
+      .replace(/𝑊/g, '<span class="math-italic">W</span>')
+      .replace(/𝑋/g, '<span class="math-italic">X</span>')
+      .replace(/𝑌/g, '<span class="math-italic">Y</span>')
+      .replace(/𝑍/g, '<span class="math-italic">Z</span>')
+      .replace(/∠/g, '<span class="math-symbol">∠</span>')
+      // GANTI DENGAN:
+      .replace(/\b([A-Z]{2,3})\b/g, (match) => {
+        // Skip angka romawi dan kata-kata umum
+        const skipWords = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        if (skipWords.includes(match)) {
+          return match;
         }
-      }
-    }
+        return `<span class="overline">${match}</span>`;
+      })
+      .replace(/180o/g, "180°")
+      .replace(/(\d+)o/g, "$1°");
 
-    return result;
+    // 2. Process bold words (hati-hati tidak mengganggu HTML tags)
+    boldWords.forEach(word => {
+      const regex = new RegExp(`\\b(${word})\\b`, 'gi');
+      processedText = processedText.replace(regex, '<strong>$1</strong>');
+    });
+
+    return processedText;
   }
-
-  function processOptionText(optionText: string): string {
-    return processMathSymbols(optionText);
-  }
-
-  let highlightedQuestion: Array<{
-    text?: string;
-    html?: string;
-    bold?: boolean;
-    isHtml?: boolean;
-  }> = [];
 
   onMount(async (): Promise<void> => {
     const result = await QuizAPI.loadQuizData();
     if (result.success && result.data) {
       quizData = result.data;
 
-      // Initialize level 0
       currentLevel.set(0);
       currentQuestionIndex.set(0);
       wrongCount.set(0);
@@ -151,7 +114,6 @@
       currentQuestion = levelData.questions[questionIndex];
       selectedAnswer = null;
 
-      // Reset image states
       imageLoading = !!currentQuestion.image;
       imageError = false;
 
@@ -161,28 +123,23 @@
     }
   }
 
-  // Function untuk get image URL
   function getImageUrl(imagePath: string): string {
     if (!imagePath) return "";
 
-    // Jika sudah URL lengkap (http/https), return as-is
     if (imagePath.startsWith("http")) {
       return imagePath;
     }
 
-    // Gunakan image_base_url dari config atau default
     const baseUrl = quizData?.quiz_config?.image_base_url || "/images/";
     return baseUrl + imagePath;
   }
 
-  // Handle image loading
   function handleImageLoad(): void {
     imageLoading = false;
     imageError = false;
     console.log("✅ Image loaded successfully");
   }
 
-  // Handle image error
   function handleImageError(): void {
     imageLoading = false;
     imageError = true;
@@ -199,7 +156,6 @@
       `🎯 Submitting answer: ${selectedAnswer} (correct: ${currentQuestion.correct_answer})`,
     );
 
-    // Save answer to database
     const answerData: AnswerData = {
       level: level,
       question_id: currentQuestion.id,
@@ -223,10 +179,8 @@
       console.error("❌ Error saving answer:", error);
     }
 
-    // Update local store
     answers.update((arr: AnswerData[]) => [...arr, answerData]);
 
-    // Update mistakes count untuk level ini
     if (!isCorrect) {
       wrongCount.update((count: number) => {
         const newCount = count + 1;
@@ -238,8 +192,6 @@
     }
 
     isSubmitting = false;
-
-    // Langsung proceed ke next tanpa delay
     proceedToNext();
   }
 
@@ -248,7 +200,6 @@
       `📊 Current state - Level: ${level}, Question: ${questionIndex + 1}, Mistakes: ${mistakes}`,
     );
 
-    // ATURAN: Jika salah 3 kali atau lebih di level ini, STOP (maksimal salah < 3)
     if (mistakes >= 3) {
       console.log(
         `🛑 Quiz stopped! ${mistakes} mistakes in Level ${level} (max allowed: 2)`,
@@ -257,7 +208,6 @@
       return;
     }
 
-    // Lanjut ke pertanyaan/level berikutnya
     nextQuestion();
   }
 
@@ -267,11 +217,9 @@
     const levelData = quizData.levels[level.toString()];
 
     if (questionIndex < levelData.questions.length - 1) {
-      // Masih ada pertanyaan di level yang sama
       console.log(`➡️ Next question in Level ${level}`);
       currentQuestionIndex.update((index: number) => index + 1);
     } else {
-      // Level selesai, cek apakah bisa naik level
       const availableLevels = Object.keys(quizData.levels).map(Number).sort();
       const maxLevel = Math.max(...availableLevels);
 
@@ -284,30 +232,26 @@
         );
         console.log(`🔄 Reset mistakes from ${mistakes} to 0`);
 
-        // Naik level dan RESET mistake counter
         currentLevel.set(nextLevel);
         currentQuestionIndex.set(0);
         wrongCount.set(0);
       } else {
-        // Semua level selesai
         console.log("🏆 All levels completed!");
         gameState.set("thankYou");
         return;
       }
     }
 
-    // Load pertanyaan berikutnya
     loadCurrentQuestion();
   }
 
-  // Get available levels for display
+  // Reactive statements
   $: availableLevels = quizData
     ? Object.keys(quizData.levels).map(Number).sort()
     : [];
   $: totalLevels = availableLevels.length;
   $: currentLevelIndex = availableLevels.indexOf(level) + 1;
 
-  // Get total questions and current position
   $: totalQuestions = quizData
     ? Object.values(quizData.levels).reduce(
         (total, level) => total + level.questions.length,
@@ -327,7 +271,6 @@
       1
     : 0;
 
-  // Debug reactive statement
   $: {
     if (typeof mistakes !== "undefined" && currentQuestion) {
       console.log(
@@ -336,16 +279,8 @@
     }
   }
 
-  // Reactive statement to reload question when stores change
   $: if (quizData && (level >= 0 || questionIndex >= 0)) {
     loadCurrentQuestion();
-  }
-
-  //let highlightedQuestion: { text: string; bold: boolean }[] = []
-
-  // UPDATE: Process question text with math notation
-  $: if (currentQuestion?.question) {
-    highlightedQuestion = processAllMathNotation(currentQuestion.question);
   }
 </script>
 
@@ -422,7 +357,6 @@
               on:load={handleImageLoad}
             />
 
-            <!-- Loading placeholder -->
             {#if imageLoading}
               <div
                 class="absolute inset-0 flex items-center justify-center bg-gray-100"
@@ -436,7 +370,6 @@
               </div>
             {/if}
 
-            <!-- Error placeholder -->
             {#if imageError}
               <div
                 class="absolute inset-0 flex items-center justify-center bg-gray-100 border border-gray-300"
@@ -476,7 +409,6 @@
             {/if}
           </div>
 
-          <!-- Image caption -->
           {#if currentQuestion.image_caption}
             <p class="text-sm text-gray-600 text-center mt-2 italic">
               {currentQuestion.image_caption}
@@ -485,53 +417,14 @@
         </div>
       {/if}
 
-      <!-- Question Text -->
-      <!-- <div class="mb-8">
-        <h2 class="text-xl font-bold text-gray-900 leading-relaxed">
-          {currentQuestion.question}
-        </h2>
-      </div> -->
-      <!-- Question Text dengan Math Symbol Support -->
+      <!-- ✅ QUESTION TEXT - FIXED dengan HTML support -->
       <div class="mb-8">
-        <h2 class="text-xl text-gray-900 leading-relaxed">
-          {#each highlightedQuestion as item, index}
-            {#if item.isHtml}
-              {@html item.html}
-            {:else if item.bold}
-              <strong>{item.text}</strong>
-            {:else}
-              {item.text || ""}
-            {/if}
-          {/each}
+        <h2 class="text-xl text-gray-900 leading-relaxed question-content">
+          {@html processQuestionWithHTML(currentQuestion.question)}
         </h2>
       </div>
 
-      <!-- Options - No result indicators -->
-      <!-- <div class="space-y-3 mb-8">
-        {#each Object.entries(currentQuestion.options) as [key, option]}
-          <button
-            on:click={() => selectedAnswer = key as 'a' | 'b' | 'c' | 'd' | 'e'}
-            disabled={isSubmitting}
-            class="w-full p-4 text-left border-2 rounded-xl transition-all duration-200 transform hover:scale-[1.01] disabled:transform-none"
-            class:bg-gray-50={!selectedAnswer || selectedAnswer !== key}
-            class:hover:bg-blue-50={!selectedAnswer && !isSubmitting}
-            class:border-gray-200={!selectedAnswer || selectedAnswer !== key}
-            class:hover:border-blue-300={!selectedAnswer && !isSubmitting}
-            class:bg-blue-100={selectedAnswer === key}
-            class:border-blue-500={selectedAnswer === key}
-          >
-            <div class="flex items-start gap-4">
-              <span class="font-bold text-blue-600 text-lg flex-shrink-0 mt-1 min-w-[32px]">
-                {key.toUpperCase()}.
-              </span>
-              <span class="text-gray-800 font-medium flex-1 text-left">
-                {option}
-              </span>
-            </div>
-          </button>
-        {/each}
-      </div> -->
-      <!-- Options dengan Math Symbol Support -->
+      <!-- ✅ OPTIONS - FIXED dengan HTML support -->
       <div class="space-y-3 mb-8">
         {#each Object.entries(currentQuestion.options) as [key, option]}
           <button
@@ -553,7 +446,7 @@
                 {key.toUpperCase()}.
               </span>
               <span class="text-gray-800 font-medium flex-1 text-left">
-                {@html processOptionText(option)}
+                {@html processQuestionWithHTML(option)}
               </span>
             </div>
           </button>
@@ -636,22 +529,24 @@
     border-radius: 3px;
   }
 
-  /* Math Symbol Styles - PERBAIKAN OVERLINE */
+  /* ✅ OVERLINE YANG DIPERBAIKI */
   :global(.overline) {
     position: relative;
     display: inline-block;
     font-weight: 600;
+    padding-top: 4px;
+    margin-top: 2px;
   }
 
-  :global(.overline::after) {
-    content: "";
+  :global(.overline::before) {
+    content: '';
     position: absolute;
-    top: -1px;
+    top: 1px;
     left: 0;
     right: 0;
-    height: 1.5px;
+    height: 2px;
     background-color: currentColor;
-    display: block;
+    border-radius: 0.5px;
   }
 
   :global(.math-italic) {
@@ -667,22 +562,20 @@
     color: #4f46e5;
   }
 
-  /* Custom scrollbar untuk mobile */
-  :global(*) {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  /* ✅ CSS UNTUK BR TAGS */
+  :global(.question-content) {
+    line-height: 1.8 !important;
   }
 
-  :global(*::-webkit-scrollbar) {
-    width: 6px;
+  :global(.question-content br) {
+    display: block;
+    margin: 8px 0;
+    content: "";
   }
 
-  :global(*::-webkit-scrollbar-track) {
-    background: transparent;
-  }
-
-  :global(*::-webkit-scrollbar-thumb) {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
+  /* Pastikan strong tags terlihat jelas */
+  :global(.question-content strong) {
+    font-weight: 700;
+    color: #dc2626;
   }
 </style>

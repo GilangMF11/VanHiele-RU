@@ -340,7 +340,7 @@
           },
           {
             "id": "L2Q7",
-            "question": "Perhatikan pernyataan-pernyataan berikut.\n1. Jika sebuah bangun itu tabung, pasti bangun tersebut adalah prisma.\n2. Semua prisma memiliki minimal satu pasang bidang simetri.\n3. Semua prisma yang beralaskan persegi, pasti kubus.\n4. Semua kerucut adalah limas.\nPernyataan di atas yang tidak tepat adalah …",
+            "question": "Perhatikan pernyataan-pernyataan berikut.<br>1. Jika sebuah bangun itu tabung, pasti bangun tersebut adalah prisma.<br>2. Semua prisma memiliki minimal satu pasang bidang simetri.<br>3. Semua prisma yang beralaskan persegi, pasti kubus.<br>4. Semua kerucut adalah limas.<br>Pernyataan di atas yang tidak tepat adalah …",
             "image": null,
             "image_alt": null,
             "options": {
@@ -361,7 +361,7 @@
         "questions": [
           {
             "id": "L3Q1",
-            "question": "Perhatikan tiga pernyataan berikut.\n1. Dua garis, tegak lurus pada garis yang sama, maka kedua garis tersebut sejajar.\n2. Sebuah garis tegak lurus pada suatu garis yang sejajar dengan garis lain, maka garis tersebut tegak lurus dengan keduanya.\n3. Jika dua buah garis jaraknya sama di setiap titik, maka dua garis tersebut sejajar.\n\n Berdasarkan sifat-sifat di atas, alasan paling tepat untuk membuktikan bahwa garis m dan n sejajar adalah …",
+            "question": "Perhatikan tiga pernyataan berikut.<br>1. Dua garis, tegak lurus pada garis yang sama, maka kedua garis tersebut sejajar.<br>2. Sebuah garis tegak lurus pada suatu garis yang sejajar dengan garis lain, maka garis tersebut tegak lurus dengan keduanya.<br>3. Jika dua buah garis jaraknya sama di setiap titik, maka dua garis tersebut sejajar.<br><br> Berdasarkan sifat-sifat di atas, alasan paling tepat untuk membuktikan bahwa garis m dan n sejajar adalah …",
             "image": "level3/L3Q1.png",
             "image_alt": "Gambar",
             "options": {
@@ -376,7 +376,7 @@
           },
           {
             "id": "L3Q2",
-            "question": "Perhatikan dua pernyataan berikut.\n1. Jika suatu bangun persegi panjang, maka diagonalnya saling membagi dua sama panjang\n2. Jika diagonal saling membagi dua sama panjang, maka bangun tersebut persegi panjang\n\nBerdasarkan penyataan di atas, berikut yang tepat adalah …",
+            "question": "Perhatikan dua pernyataan berikut.<br>1. Jika suatu bangun persegi panjang, maka diagonalnya saling membagi dua sama panjang<br>2. Jika diagonal saling membagi dua sama panjang, maka bangun tersebut persegi panjang<br><br>Berdasarkan penyataan di atas, berikut yang tepat adalah …",
             "image": null,
             "image_alt": null,
             "options": {
@@ -421,7 +421,7 @@
           },
           {
             "id": "L3Q5",
-            "question": "Perhatikan sifaf-sifat bangun datar.\n1. P adalah bangun datar dengan diagonal sama panjang\n2. S adalah persegi\n3. R adalah persegi panjang.\n\nPernyataan berikut yang tepat adalah ..",
+            "question": "Perhatikan sifaf-sifat bangun datar.<br>1. P adalah bangun datar dengan diagonal sama panjang<br>2. S adalah persegi<br>3. R adalah persegi panjang.<br><br>Pernyataan berikut yang tepat adalah ..",
             "image": null,
             "image_alt": null,
             "options": {
