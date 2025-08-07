@@ -14,6 +14,15 @@ export class DatabaseQueries {
     return result.rows[0] as AdminUser || null
   }
 
+  // src/lib/database/queries.ts
+  static async getSessionById(sessionId: number): Promise<QuizSession | null> {
+    const query = `SELECT * FROM quiz_sessions WHERE id = $1`
+    const result = await db.query(query, [sessionId])
+    return result.rows[0] as QuizSession || null
+  }
+
+
+
   static async getAdminByEmail(email: string): Promise<AdminUser | null> {
     const query = `
       SELECT * FROM users 
@@ -374,30 +383,43 @@ export class DatabaseQueries {
     return result.rows as Token[]
   }
 
-  // ===== QUIZ RESULTS OPERATIONS =====
-  static async createQuizResult(resultData: Omit<QuizResultSummary, 'id' | 'completed_at' | 'created_at'>): Promise<QuizResultSummary> {
+  static async updateTokenByValue(tokenCode: string, updates: Partial<Token>): Promise<Token> {
+    const allowedFields = ['token_name', 'max_usage', 'expires_at', 'is_active']
+    const filteredEntries = Object.entries(updates).filter(([key]) => allowedFields.includes(key))
+  
+    if (filteredEntries.length === 0) {
+      throw new Error('Tidak ada field yang valid untuk diperbarui.')
+    }
+  
+    const setClause = filteredEntries
+      .map(([key], index) => `${key} = $${index + 2}`)
+      .join(', ')
+  
+    const values = [tokenCode.toUpperCase(), ...filteredEntries.map(([_, value]) => value)]
+  
     const query = `
-      INSERT INTO quiz_results_summary (
-        student_id, session_id, total_questions, correct_answers, wrong_answers,
-        total_score, percentage, highest_level_reached, time_spent, status
-      ) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+      UPDATE tokens 
+      SET ${setClause}, updated_at = NOW() 
+      WHERE token_code = $1 
       RETURNING *
     `
-    const result = await db.query(query, [
-      resultData.student_id,
-      resultData.session_id,
-      resultData.total_questions,
-      resultData.correct_answers,
-      resultData.wrong_answers,
-      resultData.total_score,
-      resultData.percentage,
-      resultData.highest_level_reached,
-      resultData.time_spent,
-      resultData.status
-    ])
-    return result.rows[0] as QuizResultSummary
+  
+    const result = await db.query(query, values) // ✅ Hanya 2 argumen
+    if (result.rows.length === 0) {
+      throw new Error(`Token ${tokenCode} tidak ditemukan.`)
+    }
+  
+    return result.rows[0] as Token
   }
+  
+  
+  static async deleteTokenByValue(tokenCode: string): Promise<void> {
+    const query = `DELETE FROM tokens WHERE token_code = $1`
+    await db.query(query, [tokenCode.toUpperCase()])
+  }
+  
+
+  
 
   // ===== ADMIN DASHBOARD QUERIES =====
   static async getDashboardStats(): Promise<any> {
@@ -533,52 +555,290 @@ export class DatabaseQueries {
           (SUM(CASE WHEN a.is_correct = TRUE THEN 1 ELSE 0 END) * 100.0 / 
            NULLIF(COUNT(a.id), 0)), 2
         ) AS score_percentage,
-        MAX(COALESCE(a.answered_at, qs.created_at)) AS completion_date,
+        COALESCE(MAX(a.answered_at), qs.created_at) AS completion_date,
         qs.id as session_id
       FROM students s
       INNER JOIN quiz_sessions qs ON s.id = qs.student_id
       LEFT JOIN quiz_answers a ON a.session_id = qs.id
       WHERE 1=1
     `
-
+  
     const params: any[] = []
-
+  
     if (filters.level && filters.level !== 'all') {
       query += ' AND qs.current_level = $' + (params.length + 1)
       params.push(parseInt(filters.level))
     }
-
+  
     if (filters.school && filters.school !== 'all') {
       query += ' AND s.school ILIKE $' + (params.length + 1)
       params.push(`%${filters.school}%`)
     }
-
+  
     if (filters.dateFrom) {
       query += ' AND DATE(COALESCE(a.answered_at, qs.created_at)) >= $' + (params.length + 1)
       params.push(filters.dateFrom)
     }
-
+  
     if (filters.dateTo) {
       query += ' AND DATE(COALESCE(a.answered_at, qs.created_at)) <= $' + (params.length + 1)
       params.push(filters.dateTo)
     }
-
+  
     query += `
-      GROUP BY s.id, s.full_name, s.class, s.school, qs.id, qs.session_token, qs.current_level
+      GROUP BY s.id, s.full_name, s.class, s.school, qs.id, qs.session_token, qs.current_level, qs.created_at
       ORDER BY completion_date DESC NULLS LAST
     `
-
+  
     if (filters.limit) {
       query += ' LIMIT $' + (params.length + 1)
       params.push(filters.limit)
     }
-
+  
     if (filters.offset) {
       query += ' OFFSET $' + (params.length + 1)
       params.push(filters.offset)
     }
-
+  
     const result = await db.query(query, params)
     return result.rows
   }
+
+
+
+  static async createQuizResult(
+    resultData: Omit<QuizResultSummary, 'id' | 'completed_at' | 'created_at'>
+  ): Promise<QuizResultSummary> {
+    const query = `
+      INSERT INTO quiz_results_summary (
+        student_id, session_id, total_questions, correct_answers, wrong_answers,
+        total_score, percentage, highest_level_reached, time_spent, status
+      ) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+      RETURNING *
+    `
+    const result = await db.query(query, [
+      resultData.student_id,
+      resultData.session_id,
+      resultData.total_questions,
+      resultData.correct_answers,
+      resultData.wrong_answers,
+      resultData.total_score,
+      resultData.percentage,
+      resultData.highest_level_reached,
+      resultData.time_spent,
+      resultData.status
+    ])
+    
+    console.log('✅ Quiz result summary created:', result.rows[0].id)
+    return result.rows[0] as QuizResultSummary
+  }
+
+  /**
+   * Get quiz result by session ID
+   */
+  static async getQuizResultBySessionId(sessionId: number): Promise<QuizResultSummary | null> {
+    const query = `
+      SELECT * FROM quiz_results_summary 
+      WHERE session_id = $1
+    `
+    const result = await db.query(query, [sessionId])
+    return result.rows[0] as QuizResultSummary || null
+  }
+
+  /**
+   * Get quiz results by student ID
+   */
+  static async getQuizResultsByStudentId(studentId: number): Promise<QuizResultSummary[]> {
+    const query = `
+      SELECT qrs.*, qs.session_token, qs.started_at
+      FROM quiz_results_summary qrs
+      JOIN quiz_sessions qs ON qrs.session_id = qs.id
+      WHERE qrs.student_id = $1
+      ORDER BY qrs.completed_at DESC
+    `
+    const result = await db.query(query, [studentId])
+    return result.rows as QuizResultSummary[]
+  }
+
+  /**
+   * Get all quiz results with filters
+   */
+  static async getQuizResultsWithFilters(filters: {
+    level?: number
+    school?: string
+    dateFrom?: string
+    dateTo?: string
+    status?: string
+    limit?: number
+    offset?: number
+  } = {}): Promise<any[]> {
+    let query = `
+      SELECT 
+        qrs.*,
+        s.full_name as student_name,
+        s.class as student_class,
+        s.school as student_school,
+        qs.session_token,
+        qs.started_at,
+        qs.token_used
+      FROM quiz_results_summary qrs
+      JOIN students s ON qrs.student_id = s.id
+      JOIN quiz_sessions qs ON qrs.session_id = qs.id
+      WHERE 1=1
+    `
+    
+    const params: any[] = []
+    
+    if (filters.level !== undefined) {
+      query += ` AND qrs.highest_level_reached = $${params.length + 1}`
+      params.push(filters.level)
+    }
+    
+    if (filters.school) {
+      query += ` AND s.school ILIKE $${params.length + 1}`
+      params.push(`%${filters.school}%`)
+    }
+    
+    if (filters.status) {
+      query += ` AND qrs.status = $${params.length + 1}`
+      params.push(filters.status)
+    }
+    
+    if (filters.dateFrom) {
+      query += ` AND DATE(qrs.completed_at) >= $${params.length + 1}`
+      params.push(filters.dateFrom)
+    }
+    
+    if (filters.dateTo) {
+      query += ` AND DATE(qrs.completed_at) <= $${params.length + 1}`
+      params.push(filters.dateTo)
+    }
+    
+    query += ` ORDER BY qrs.completed_at DESC`
+    
+    if (filters.limit) {
+      query += ` LIMIT $${params.length + 1}`
+      params.push(filters.limit)
+    }
+    
+    if (filters.offset) {
+      query += ` OFFSET $${params.length + 1}`
+      params.push(filters.offset)
+    }
+    
+    const result = await db.query(query, params)
+    return result.rows
+  }
+
+  /**
+   * Update quiz result
+   */
+  static async updateQuizResult(
+    resultId: number, 
+    updates: Partial<QuizResultSummary>
+  ): Promise<QuizResultSummary> {
+    const setClause = Object.keys(updates)
+      .map((key, index) => `${key} = $${index + 2}`)
+      .join(', ')
+    
+    const query = `
+      UPDATE quiz_results_summary 
+      SET ${setClause}
+      WHERE id = $1 
+      RETURNING *
+    `
+    const values = [resultId, ...Object.values(updates)]
+    const result = await db.query(query, values)
+    return result.rows[0] as QuizResultSummary
+  }
+
+  /**
+   * Get quiz statistics for dashboard
+   */
+  static async getQuizStatistics(days: number = 30): Promise<any> {
+    const query = `
+      SELECT 
+        COUNT(DISTINCT qrs.student_id) as total_participants,
+        COUNT(qrs.id) as total_sessions_completed,
+        AVG(qrs.percentage) as average_percentage,
+        AVG(qrs.highest_level_reached) as average_level,
+        AVG(qrs.time_spent) as average_time_spent,
+        MAX(qrs.percentage) as highest_score,
+        MIN(qrs.percentage) as lowest_score,
+        COUNT(CASE WHEN qrs.status = 'completed' THEN 1 END) as completed_count,
+        COUNT(CASE WHEN qrs.status = 'stopped_wrong' THEN 1 END) as stopped_count,
+        COUNT(CASE WHEN qrs.percentage >= 80 THEN 1 END) as excellent_count,
+        COUNT(CASE WHEN qrs.percentage >= 60 AND qrs.percentage < 80 THEN 1 END) as good_count,
+        COUNT(CASE WHEN qrs.percentage < 60 THEN 1 END) as needs_improvement_count
+      FROM quiz_results_summary qrs
+      WHERE qrs.completed_at >= CURRENT_DATE - INTERVAL '${days} days'
+    `
+    
+    const result = await db.query(query)
+    return result.rows[0]
+  }
+
+  /**
+   * Get level distribution
+   */
+  static async getLevelDistribution(): Promise<any[]> {
+    const query = `
+      SELECT 
+        highest_level_reached as level,
+        COUNT(*) as count,
+        AVG(percentage) as avg_percentage
+      FROM quiz_results_summary
+      GROUP BY highest_level_reached
+      ORDER BY highest_level_reached
+    `
+    
+    const result = await db.query(query)
+    return result.rows
+  }
+
+  /**
+   * Get school performance ranking
+   */
+  static async getSchoolRanking(limit: number = 10): Promise<any[]> {
+    const query = `
+      SELECT 
+        s.school,
+        COUNT(DISTINCT s.id) as total_students,
+        COUNT(qrs.id) as total_attempts,
+        AVG(qrs.percentage) as avg_percentage,
+        MAX(qrs.percentage) as best_score,
+        AVG(qrs.highest_level_reached) as avg_level
+      FROM students s
+      JOIN quiz_results_summary qrs ON s.id = qrs.student_id
+      GROUP BY s.school
+      ORDER BY avg_percentage DESC
+      LIMIT $1
+    `
+    
+    const result = await db.query(query, [limit])
+    return result.rows
+  }
+
+  /**
+   * Get daily performance trend
+   */
+  static async getDailyPerformanceTrend(days: number = 7): Promise<any[]> {
+    const query = `
+      SELECT 
+        DATE(completed_at) as date,
+        COUNT(*) as total_quizzes,
+        AVG(percentage) as avg_percentage,
+        AVG(highest_level_reached) as avg_level,
+        COUNT(DISTINCT student_id) as unique_students
+      FROM quiz_results_summary
+      WHERE completed_at >= CURRENT_DATE - INTERVAL '${days} days'
+      GROUP BY DATE(completed_at)
+      ORDER BY date DESC
+    `
+    
+    const result = await db.query(query)
+    return result.rows
+  }
+  
 }

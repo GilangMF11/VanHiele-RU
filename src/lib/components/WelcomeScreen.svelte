@@ -88,18 +88,18 @@
     <!-- Level Progress Indicator -->
     <div class="mb-8">
       <div class="flex justify-center space-x-2">
-        {#each Array(5) as _, i}
+        {#each Array(4) as _, i}
           <div class="relative">
             <div class="w-8 h-8 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center text-xs font-bold text-gray-600 shadow-sm">
               {i + 0}
             </div>
-            {#if i < 4}
+            {#if i < 3}
               <div class="absolute top-4 left-8 w-4 h-0.5 bg-gray-300"></div>
             {/if}
           </div>
         {/each}
       </div>
-      <p class="text-xs text-gray-500 mt-2">Level 0 → Level 4</p>
+      <p class="text-xs text-gray-500 mt-2">Level 0 → Level 3</p>
     </div>
 
     <!-- Start Button -->

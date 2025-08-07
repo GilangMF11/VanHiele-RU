@@ -143,10 +143,10 @@
             "image": "level1/L1Q1.png",
             "image_alt": "Gambar",
             "options": {
-              "a": "𝑃𝑄 dan 𝑆𝑄 sama Panjang",
-              "b": "𝑷𝑹 dan 𝑺𝑸 tegak lurus",
+              "a": "<span class='overline'>PQ</span> dan <span class='overline'>SQ</span> sama Panjang",
+              "b": "<span class='overline'>PR</span> dan <span class='overline'>SQ</span> tegak lurus",
               "c": "Terdapat empat sudut siku-siku",
-              "d": "𝑃𝑂 lebih panjang dibanding 𝑆𝑂",
+              "d": "<span class='overline'>PO</span> lebih panjang dibanding <span class='overline'>SO</span>",
               "e": "∠𝑆𝑃𝑄 lebih besar dibandingkan ∠𝑆𝑂𝑄"
             },
             "correct_answer": "b",
@@ -235,7 +235,7 @@
             "options": {
               "a": "PQRS selalu memiliki dua pasang sisi yang sama panjang.",
               "b": "PQRS minimal memiliki dua pasang sudut yang sama besar.",
-              "c": "Garis 𝑃𝑅 dan 𝑄𝑆 selalu tegak lurus",
+              "c": "Garis <span class='overline'>PR</span> dan <span class='overline'>QS</span> selalu tegak lurus",
               "d": "Besar ∠𝑸 dan ∠𝑺 selalu sama",
               "e": "Besar ∠𝑃 dan ∠𝑅 selalu sama"
             },
@@ -295,8 +295,8 @@
           },
           {
             "id": "L2Q4",
-            "question": "Perhatikan pernyataan-pernyataan berikut.\n1. Jika suatu bangun adalah persegi, maka bangun tersebut pasti belah ketupat.\n2. Semua persegi pasti persegi panjang.\n3. Beberapa jajargenjang pasti persegi panjang.\n4. Semua jajargenjang punya diagonal yang kongruen.\n5. Jika sebuah bangun mempunyai dua sumbu simetri, pasti bangun tersebut adalah segiempat.\nPertanyaan yang tidak tepat adalah ..",
-            "image": null,
+            "question": "Pertanyaan yang tidak tepat adalah ..",
+            "image": "level2/L2Q4.png",
             "image_alt": null,
             "options": {
               "a": "Hanya pernyataan 5",
@@ -406,15 +406,15 @@
           },
           {
             "id": "L3Q4",
-            "question": "Berdasarkan informasi di atas, dapat ditunjukkan bahwa ruas garis 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 berpotongan di satu titik. Dari pernyataan berikut, bukti yang sesuai adalah ...",
+            "question": "Berdasarkan informasi di atas, dapat ditunjukkan bahwa ruas garis <span class='overline'>BQ</span> , <span class='overline'>AR</span> , dan <span class='overline'>PC</span> berpotongan di satu titik. Dari pernyataan berikut, bukti yang sesuai adalah ...",
             "image": "level3/L3Q4.png",
             "image_alt": "Gambar",
             "options": {
-              "a": "Hanya pada segitiga siku-siku seperti di atas, diperoleh bahwa 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 berpotongan di satu titik",
-              "b": "Tidak semua segitiga siku-siku dapat diperoleh bahwa 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 berpotongan di satu titik",
-              "c": "Pada setiap segitiga siku-siku, dapat diperoleh bahwa 𝑩𝑸 , 𝑨𝑹 , dan 𝑷𝑪 berpotongan di satu titik",
-              "d": "Pada setiap segitiga, dapat diperoleh bahwa 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 berpotongan di satu titik",
-              "e": "Pada setiap segitiga sama sisi, 𝐵𝑄 , 𝐴𝑅 , dan 𝑃𝐶 pasti berpotongan di satu titik"
+              "a": "Hanya pada segitiga siku-siku seperti di atas, diperoleh bahwa <span class='overline'>BQ</span> , <span class='overline'>AR</span> , dan <span class='overline'>PC</span> berpotongan di satu titik",
+              "b": "Tidak semua segitiga siku-siku dapat diperoleh bahwa <span class='overline'>BQ</span> , <span class='overline'>AR</span> , dan <span class='overline'>PC</span> berpotongan di satu titik",
+              "c": "Pada setiap segitiga siku-siku, dapat diperoleh bahwa <span class='overline'>BQ</span> , <span class='overline'>AR</span> , dan <span class='overline'>PC</span> berpotongan di satu titik",
+              "d": "Pada setiap segitiga, dapat diperoleh bahwa <span class='overline'>BQ</span> , <span class='overline'>AR</span> , dan <span class='overline'>PC</span> berpotongan di satu titik",
+              "e": "Pada setiap segitiga sama sisi, <span class='overline'>BQ</span> , <span class='overline'>AR</span> , dan <span class='overline'>PC</span> pasti berpotongan di satu titik"
             },
             "correct_answer": "c",
             "explanation": ""

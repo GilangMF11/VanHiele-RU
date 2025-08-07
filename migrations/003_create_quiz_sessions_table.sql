@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS quiz_sessions (
     current_question INTEGER DEFAULT 0,
     wrong_count INTEGER DEFAULT 0,
     status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'completed', 'stopped', 'timeout')),
-    token_used VARCHAR(10), -- Token yang digunakan student
+    token_used VARCHAR(50), -- Token yang digunakan student
     started_at TIMESTAMP DEFAULT NOW(),
     completed_at TIMESTAMP,
     ip_address INET,

@@ -116,7 +116,6 @@ export interface AdminLog {
 }
 
 export interface QuizResultSummary {
-  id: number
   student_id: number
   session_id: number
   total_questions: number
@@ -129,6 +128,18 @@ export interface QuizResultSummary {
   status: 'completed' | 'stopped_wrong' | 'timeout'
   completed_at: string
   created_at: string
+}
+
+export interface ResultSummaryData {
+  total_questions: number
+  correct_answers: number
+  wrong_answers: number
+  total_score: number
+  percentage: number
+  highest_level_reached: number
+  time_spent: number
+  status: 'completed' | 'stopped_wrong' | 'timeout'
+  user_data: UserDataWithSession
 }
 
 // Frontend types - UPDATED FOR 5 OPTIONS
@@ -189,6 +200,7 @@ export interface UserDataWithSession extends UserData {
   session_id?: number
   student_id?: number
 }
+
 
 export interface APIResponse<T = any> {
   success: boolean

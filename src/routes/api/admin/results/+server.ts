@@ -17,10 +17,8 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
     const dateFrom = url.searchParams.get('date_from')
     const dateTo = url.searchParams.get('date_to')
 
-    // Total fixed questions
     const TOTAL_QUESTIONS = 27
 
-    // Query untuk mengambil data siswa + jawaban mereka (berdasarkan student_id)
     let query = `
       SELECT 
         s.id AS student_id,
@@ -28,9 +26,10 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
         s.class AS student_class,
         s.school AS student_school,
         MAX(a.level) AS level,
+        COUNT(CASE WHEN a.selected_answer IS NOT NULL THEN 1 END) AS total_answered,
         COUNT(CASE WHEN a.selected_answer = a.correct_answer THEN 1 END) AS correct_answers,
         COUNT(CASE WHEN a.selected_answer IS NOT NULL AND a.selected_answer != a.correct_answer THEN 1 END) AS wrong_answers,
-        MAX(a.answered_at) AS completion_date
+        COALESCE(MAX(a.answered_at), NOW()) AS completion_date
       FROM students s
       LEFT JOIN quiz_answers a ON a.student_id = s.id
       WHERE 1=1
@@ -63,16 +62,24 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
       ORDER BY completion_date DESC NULLS LAST
     `
 
-    console.log('🔍 Executing result query...')
     const result = await db.query(query, params)
 
     const formattedResults = result.rows.map(row => {
       const correct = parseInt(row.correct_answers) || 0
       const wrong = parseInt(row.wrong_answers) || 0
-
+      const totalAnswered = parseInt(row.total_answered) || 0
       const score = correct > 0
         ? parseFloat(((correct / TOTAL_QUESTIONS) * 100).toFixed(2))
         : 0
+
+      let status: 'not_started' | 'in_progress' | 'completed'
+      if (totalAnswered === 0) {
+        status = 'not_started'
+      } else if (totalAnswered < TOTAL_QUESTIONS) {
+        status = 'in_progress'
+      } else {
+        status = 'completed'
+      }
 
       return {
         student_id: row.student_id,
@@ -81,10 +88,12 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
         student_school: row.student_school,
         level: parseInt(row.level) || 0,
         total_questions: TOTAL_QUESTIONS,
+        total_answered: totalAnswered,
         correct_answers: correct,
         wrong_answers: wrong,
         score_percentage: score,
-        completion_date: row.completion_date
+        completion_date: row.completion_date,
+        status
       }
     })
 

@@ -1,8 +1,10 @@
-<!-- src/lib/components/ThankYouScreen.svelte -->
+<!-- src/lib/components/ThankYouScreen.svelte - LEVEL 0-3 DISPLAY -->
 <script lang="ts">
   import { onMount } from 'svelte'
   import { gameState, currentLevel, wrongCount, userData, answers } from '../stores/quiz.js'
-  import type { AnswerData, UserData } from '../types/index.js'
+  import type { AnswerData, UserData, ResultSummaryData } from '../types/index.js'
+  import { QuizAPI } from '../api.js'
+    import { Result } from 'postcss';
 
   let level: number = 0
   let mistakes: number = 0
@@ -17,19 +19,35 @@
   answers.subscribe((value: AnswerData[]) => userAnswers = value)
   userData.subscribe((value: UserData) => user = value)
 
-  // Computed values - Level 0-4 logic
-  $: completedLevels = Math.max(0, level - (mistakes > 2 ? 1 : 0))
+  // LEVEL 0-3 SYSTEM (Tanpa konversi)
+  // Level 0 = Level Mudah
+  // Level 1 = Level Sedang
+  // Level 2 = Level Sulit
+  // Level 3 = Level Expert
+  
+  // Calculate completed levels
+  $: completedLevels = (() => {
+    // Jika berhasil menyelesaikan quiz (mistakes <= 2)
+    if (mistakes <= 2) {
+      return level + 1  // Selesaikan level saat ini
+    }
+    // Jika gagal karena salah > 2
+    return level  // Hanya sampai level sebelumnya
+  })()
+  
   $: totalQuestions = userAnswers.length
   $: correctAnswers = userAnswers.filter(a => a.is_correct).length
   $: wrongAnswers = userAnswers.filter(a => !a.is_correct).length
   $: accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
-  $: isFullCompletion = completedLevels === 4 && mistakes <= 2
+  
+  // Full completion = menyelesaikan level 3 dengan mistakes <= 2
+  $: isFullCompletion = level === 3 && mistakes <= 2
 
   // Messages based on performance
   $: performanceMessage = getPerformanceMessage(completedLevels, accuracy)
   $: encouragementMessage = getEncouragementMessage(completedLevels, accuracy)
 
-  onMount(() => {
+  onMount(async () => {
     // Smooth entrance animation
     setTimeout(() => {
       showContent = true
@@ -41,7 +59,59 @@
         showConfetti = true
       }, 500)
     }
+
+    // Save quiz results summary to database
+    await saveQuizSummary()
   })
+
+  async function saveQuizSummary() {
+  try {
+    const lastAnswer = userAnswers[userAnswers.length - 1]
+    const sessionsId = user.token
+    console.log('Session token:', sessionsId)
+    if (!lastAnswer?.session_token) {
+      console.warn('No session token found')
+      return
+    }
+
+    // Ambil student_id dan session_id dari lastAnswer (pastikan mereka ada)
+    const student_id = null
+    const session_id = lastAnswer.session_token ? parseInt(lastAnswer.session_token.split('-')[1]) : undefined
+
+    if (!student_id || !session_id) {
+      console.warn('Missing student_id or session_id')
+      return
+    }
+
+    const timeSpent = calculateTimeSpent()
+
+    const response = await QuizAPI.completeQuiz({
+      student_id,
+      session_id,
+      total_questions: totalQuestions,
+      correct_answers: correctAnswers,
+      wrong_answers: wrongAnswers,
+      total_score: correctAnswers * 10 * (level + 1),
+      percentage: accuracy,
+      highest_level_reached: level,
+      time_spent: timeSpent,
+      status: "completed"
+    })
+
+    if (response.success) {
+      console.log('✅ Quiz summary saved successfully')
+    }
+  } catch (error) {
+    console.error('Failed to save quiz summary:', error)
+  }
+}
+
+
+  function calculateTimeSpent(): number {
+    // Calculate from first to last answer timestamp if available
+    // This is a placeholder - implement based on your timestamp tracking
+    return 0
+  }
 
   function getPerformanceMessage(levels: number, acc: number): string {
     if (levels === 4 && acc >= 90) {
@@ -55,8 +125,7 @@
     } else if (levels >= 1) {
       return "📚 KEEP LEARNING! TERUS BELAJAR!"
     } else {
-      //return "🌱 NICE TRY! COBA LAGI!"
-      return "📚 KEEP LEARNING! TERUS BELAJAR!"
+      return "🌱 NICE TRY! COBA LAGI!"
     }
   }
 
@@ -64,21 +133,20 @@
     if (levels === 4) {
       return "Anda berhasil menyelesaikan semua level! Persiapan UMP Anda sangat baik!"
     } else if (levels >= 3) {
-      return "Hampir sempurna! Anda sudah siap menghadapi ujian yang sesungguhnya!"
+      return "Pencapaian yang bagus! Anda sudah siap menghadapi ujian yang sesungguhnya!"
     } else if (levels >= 2) {
       return "Progres yang solid! Dengan sedikit latihan lagi, Anda akan semakin baik!"
     } else if (levels >= 1) {
       return "Awal yang baik! Terus berlatih untuk meningkatkan kemampuan Anda!"
     } else {
-      //return "Jangan menyerah! Setiap usaha adalah langkah menuju kesuksesan!"
-      return "Awal yang baik! Terus berlatih untuk meningkatkan kemampuan Anda!"
+      return "Jangan menyerah! Setiap usaha adalah langkah menuju kesuksesan!"
     }
   }
 
   function restartQuiz(): void {
     // Reset all stores
     gameState.set('welcome')
-    currentLevel.set(0)
+    currentLevel.set(0)  // Start from level 0
     wrongCount.set(0)
     answers.set([])
     userData.set({ name: '', class: '', school: '', token: '' })
@@ -97,11 +165,21 @@
   }
 
   function getLevelBadgeColor(level: number): string {
-    if (level === 4) return 'bg-gradient-to-r from-yellow-400 to-yellow-600'
-    if (level >= 3) return 'bg-gradient-to-r from-green-400 to-green-600'
-    if (level >= 2) return 'bg-gradient-to-r from-blue-400 to-blue-600'
-    if (level >= 1) return 'bg-gradient-to-r from-purple-400 to-purple-600'
-    return 'bg-gradient-to-r from-gray-400 to-gray-600'
+    if (level === 4) return 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white'
+    if (level === 3) return 'bg-gradient-to-r from-purple-400 to-purple-600 text-white'
+    if (level === 2) return 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
+    if (level === 1) return 'bg-gradient-to-r from-green-400 to-green-600 text-white'
+    return 'bg-gradient-to-r from-gray-400 to-gray-600 text-white'
+  }
+
+  function getLevelName(lvl: number): string {
+    switch(lvl) {
+      case 0: return 'Mudah'
+      case 1: return 'Sedang'
+      case 2: return 'Sulit'
+      case 3: return 'Expert'
+      default: return 'Level ' + lvl
+    }
   }
 </script>
 
@@ -196,11 +274,11 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
         <!-- Level Reached -->
         <div class="text-center">
-          <div class="w-16 h-16 {getLevelBadgeColor(completedLevels)} rounded-2xl mx-auto flex items-center justify-center mb-3 shadow-lg">
-            <span class="text-2xl font-bold text-white">{completedLevels}</span>
+          <div class="w-16 h-16 {getLevelBadgeColor(level)} rounded-2xl mx-auto flex items-center justify-center mb-3 shadow-lg">
+            <span class="text-2xl font-bold">{level}</span>
           </div>
-          <p class="text-xs text-gray-600 mb-1">Level Dicapai</p>
-          <p class="font-bold text-gray-900">{completedLevels} dari 4</p>
+          <p class="text-xs text-gray-600 mb-1">Level Terakhir</p>
+          <p class="font-bold text-gray-900">{getLevelName(level)}</p>
         </div>
 
         <!-- Total Questions -->
@@ -234,38 +312,29 @@
           <p class="font-bold {getGradeColor(accuracy)}">{accuracy}%</p>
         </div>
       </div>
-    </div>
 
-    <!-- Performance Analysis -->
-    <!-- <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-6 mb-8 border border-yellow-100">
-      <h3 class="font-semibold text-gray-900 mb-4 flex items-center justify-center">
-        <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-        </svg>
-        Analisis Performa
-      </h3>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <!-- Additional Stats -->
+      <div class="mt-6 pt-6 border-t border-gray-200 grid grid-cols-2 gap-4 text-sm">
         <div class="flex justify-between">
-          <span class="text-gray-600">Jawaban Benar:</span>
-          <span class="font-bold text-green-600">{correctAnswers} soal</span>
+          <span class="text-gray-600">Level Selesai:</span>
+          <span class="font-bold text-blue-600">{completedLevels}</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-gray-600">Jawaban Salah:</span>
-          <span class="font-bold text-red-600">{wrongAnswers} soal</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-gray-600">Tingkat Kesulitan:</span>
-          <span class="font-bold text-blue-600">Level {completedLevels}</span>
+          <span class="text-gray-600">Total Kesalahan:</span>
+          <span class="font-bold {mistakes > 2 ? 'text-red-600' : 'text-green-600'}">{mistakes}</span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Status:</span>
           <span class="font-bold {mistakes > 2 ? 'text-orange-600' : 'text-green-600'}">
-            {mistakes > 2 ? 'Dihentikan (Lebih dari 2x Salah)' : 'Selesai Normal'}
+            {mistakes > 2 ? 'Dihentikan' : isFullCompletion ? 'Sempurna' : 'Selesai'}
           </span>
         </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Total Poin:</span>
+          <span class="font-bold text-purple-600">{correctAnswers * 10 * (level + 1)}</span>
+        </div>
       </div>
-    </div> -->
+    </div>
 
     <!-- Action Buttons -->
     <div class="space-y-4">
@@ -273,7 +342,6 @@
         on:click={restartQuiz}
         class="group w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white py-4 px-8 rounded-2xl font-semibold text-lg transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl relative overflow-hidden"
       >
-        <!-- Button shine effect -->
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-full group-hover:translate-x-[-200%] transition-transform duration-700"></div>
         
         <div class="relative flex items-center justify-center">
@@ -302,19 +370,6 @@
       <p class="text-sm text-gray-500 leading-relaxed">
         💡 <strong>Tips:</strong> Terus berlatih soal-soal UMP untuk meningkatkan kemampuan Anda!
       </p>
-    </div>
-  </div>
-
-  <!-- Floating particles animation -->
-  <div class="absolute inset-0 pointer-events-none">
-    <div class="absolute animate-float-slow">
-      <div class="w-1 h-1 bg-white/30 rounded-full" style="top: 20%; left: 15%;"></div>
-    </div>
-    <div class="absolute animate-float-medium">
-      <div class="w-1 h-1 bg-white/20 rounded-full" style="top: 60%; left: 80%;"></div>
-    </div>
-    <div class="absolute animate-float-fast">
-      <div class="w-1 h-1 bg-white/40 rounded-full" style="top: 80%; left: 10%;"></div>
     </div>
   </div>
 </div>
