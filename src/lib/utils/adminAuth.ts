@@ -81,20 +81,29 @@ export async function loginAdmin(username: string, password: string) {
 
 export async function logoutAdmin() {
   try {
+    console.log('🔄 Sending logout request...')
+    
     const response = await fetch('/api/admin/logout', {
       method: 'POST',
-      credentials: 'include'
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
     
+    console.log('📡 Logout response status:', response.status)
+    
     if (response.ok) {
-      console.log('✅ Logout successful') // 🔍 Debug
-      return { success: true }
+      const result = await response.json()
+      console.log('✅ Logout successful:', result)
+      return { success: true, message: result.message }
     } else {
-      console.error('❌ Logout failed') // 🔍 Debug
-      return { success: false, error: 'Logout failed' }
+      const errorText = await response.text()
+      console.error('❌ Logout failed:', errorText)
+      return { success: false, error: errorText || 'Logout failed' }
     }
   } catch (error) {
-    console.error('💥 Logout error:', error)
+    console.error('💥 Logout network error:', error)
     return { success: false, error: 'Network error' }
   }
 }

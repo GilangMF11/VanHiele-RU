@@ -1,6 +1,7 @@
 import { verifyJWT } from "$lib/utils/jwtUtils"
 import { json, type RequestHandler } from "@sveltejs/kit"
 import { DatabaseQueries } from "$lib/database/queries.js"
+import { db } from "$lib/database/connection.js"
 
 export const GET: RequestHandler = async ({ url, cookies }) => {
   try {
@@ -188,3 +189,59 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 //     }, { status: 500 })
 //   }
 // }
+
+export const DELETE: RequestHandler = async ({ request, cookies }) => {
+  try {
+    console.log('🗑️ DELETE /api/admin/results called')
+
+    const adminSession = cookies.get('admin_session')
+    if (!adminSession) return json({ error: 'Unauthorized' }, { status: 401 })
+
+    const adminUser = verifyJWT(adminSession)
+    if (!adminUser) return json({ error: 'Invalid session' }, { status: 401 })
+
+    const { resultId } = await request.json()
+    
+    if (!resultId) {
+      return json({ success: false, error: 'resultId is required' }, { status: 400 })
+    }
+
+    console.log('🗑️ Deleting result with session_id:', resultId)
+
+    // Delete from quiz_results_summary first
+    const deleteSummaryQuery = `
+      DELETE FROM quiz_results_summary 
+      WHERE session_id = $1
+    `
+    await db.query(deleteSummaryQuery, [resultId])
+
+    // Delete from quiz_answers
+    const deleteAnswersQuery = `
+      DELETE FROM quiz_answers 
+      WHERE session_id = $1
+    `
+    await db.query(deleteAnswersQuery, [resultId])
+
+    // Delete from quiz_sessions
+    const deleteSessionQuery = `
+      DELETE FROM quiz_sessions 
+      WHERE id = $1
+    `
+    await db.query(deleteSessionQuery, [resultId])
+
+    console.log('✅ Successfully deleted result:', resultId)
+
+    return json({ 
+      success: true, 
+      message: 'Result deleted successfully' 
+    })
+
+  } catch (error) {
+    console.error('❌ Error deleting result:', error)
+    return json({ 
+      success: false, 
+      error: 'Failed to delete result',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
+  }
+}

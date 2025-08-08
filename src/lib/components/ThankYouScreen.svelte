@@ -496,7 +496,7 @@
               : 'text-green-600'}"
           >
             {mistakes > 2
-              ? "Dihentikan"
+              ? "Selesai"
               : isFullCompletion
                 ? "Sempurna"
                 : "Selesai"}

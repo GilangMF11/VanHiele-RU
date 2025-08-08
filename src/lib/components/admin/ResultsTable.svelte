@@ -785,7 +785,7 @@
             <span class="wrong-answers">{selectedResult.wrong_answers}</span>
           </div>
           <div class="detail-item">
-            <label>Skor</label>
+            <label>Akurasi</label>
             <span
               class="score {getScoreColor(
                 selectedResult.score_percentage || 0,

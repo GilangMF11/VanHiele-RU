@@ -555,7 +555,7 @@
     top: 1px;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 1px;
     background-color: currentColor;
     border-radius: 0.5px;
   }

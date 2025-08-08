@@ -29,11 +29,30 @@
 
   async function handleLogout() {
     try {
-      await logoutAdmin()
-      $adminUser = null
-      goto('/admin/login')
+      console.log('🚪 Starting logout process...')
+      
+      const result = await logoutAdmin()
+      
+      if (result.success) {
+        console.log('✅ Logout successful, clearing user state...')
+        
+        // Clear admin user state
+        $adminUser = null
+        
+        // Close dropdown menu
+        showProfileMenu = false
+        
+        console.log('🔄 Redirecting to login page...')
+        
+        // Use window.location for hard redirect to ensure clean state
+        window.location.href = '/admin/login'
+      } else {
+        console.error('❌ Logout failed:', result.error)
+        alert('Logout gagal: ' + (result.error || 'Unknown error'))
+      }
     } catch (error) {
-      console.error('Logout error:', error)
+      console.error('💥 Logout error:', error)
+      alert('Terjadi kesalahan saat logout')
     }
   }
 
