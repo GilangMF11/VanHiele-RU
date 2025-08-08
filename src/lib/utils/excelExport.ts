@@ -18,7 +18,7 @@
   function generateCSV(results: StudentResult[]): string {
     const headers = [
       'Nama',
-      'Kelas', 
+      'Kelas',
       'Sekolah',
       'Level',
       'Total Soal',
@@ -28,27 +28,33 @@
       'Waktu (detik)',
       'Tanggal Selesai',
       'Token'
-    ]
+    ];
+  
+    // Helper function to safely convert values to strings
+    const safeToString = (value: any): string => {
+      if (value === null || value === undefined) return '';
+      return value.toString();
+    };
   
     const rows = results.map(result => [
-      result.student_name,
-      result.student_class,
-      result.student_school,
-      result.level.toString(),
-      result.total_questions.toString(),
-      result.correct_answers.toString(),
-      result.wrong_answers.toString(),
-      result.score_percentage.toString(),
-      result.time_taken.toString(),
-      new Date(result.completion_date?.toString() || '').toLocaleString('id-ID'),
-      result.session_token
-    ])
+      safeToString(result.student_name),
+      safeToString(result.student_class),
+      safeToString(result.student_school),
+      safeToString(result.level),
+      safeToString(result.total_questions),
+      safeToString(result.correct_answers),
+      safeToString(result.wrong_answers),
+      safeToString(result.score_percentage),
+      safeToString(result.time_taken),
+      result.completion_date ? new Date(result.completion_date).toLocaleString('id-ID') : '',
+      safeToString(result.session_token)
+    ]);
   
     const csvContent = [headers, ...rows]
-      .map(row => row.map(field => `"${field}"`).join(','))
-      .join('\n')
+      .map(row => row.map(field => `"${field.replace(/"/g, '""')}"`).join(','))
+      .join('\n');
   
-    return csvContent
+    return csvContent;
   }
   
   // For detailed answers export

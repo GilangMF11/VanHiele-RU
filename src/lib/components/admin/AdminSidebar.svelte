@@ -19,12 +19,12 @@
       icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
       badge: null
     },
-    {
-      name: 'Token Management',
-      href: '/admin/tokens',
-      icon: 'M15 7a2 2 0 012 2m-2-2a2 2 0 00-2 2m2-2h.01M9 9h.01M13 13h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-      badge: 'New'
-    }
+    // {
+    //   name: 'Token Management',
+    //   href: '/admin/tokens',
+    //   icon: 'M15 7a2 2 0 012 2m-2-2a2 2 0 00-2 2m2-2h.01M9 9h.01M13 13h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+    //   badge: 'New'
+    // }
   ]
 
   async function handleLogout() {

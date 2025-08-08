@@ -1,243 +1,285 @@
 <!-- lib/components/admin/ResultsTable.svelte -->
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { exportResultsToExcel } from '$lib/utils/excelExport'
-  import { formatDateTime } from '$lib/utils/dateFormatter'
-  import type { StudentResult } from '$lib/types/admin'
-  
+  import { onMount } from "svelte";
+  import { exportResultsToExcel } from "$lib/utils/excelExport";
+  import { formatDateTime } from "$lib/utils/dateFormatter";
+  import type { StudentResult } from "$lib/types/admin";
+
   // Component state - fetch data directly
-  let results: StudentResult[] = []
-  let loading = false
-  let error: string | null = null
-  
+  let results: StudentResult[] = [];
+  let loading = false;
+  let error: string | null = null;
+
   // Define valid sort keys as a type
-  type SortableKeys = keyof Pick<StudentResult, 'student_name' | 'student_class' | 'level' | 'score_percentage' | 'completion_date'>
-  
+  type SortableKeys = keyof Pick<
+    StudentResult,
+    | "student_name"
+    | "student_class"
+    | "level"
+    | "score_percentage"
+    | "completion_date"
+  >;
+
   // Search and filter states
-  let searchTerm = ''
-  let selectedLevel = 'all'
-  let selectedStatus = 'all'
-  let selectedClass = 'all'
-  let sortBy: SortableKeys = 'completion_date'
-  let sortOrder: 'asc' | 'desc' = 'desc'
-  
+  let searchTerm = "";
+  let selectedLevel = "all";
+  let selectedStatus = "all";
+  let selectedClass = "all";
+  let sortBy: SortableKeys = "completion_date";
+  let sortOrder: "asc" | "desc" = "desc";
+
   // Pagination
-  let currentPage = 1
-  let itemsPerPage = 10
-  let totalCount = 0
-  
+  let currentPage = 1;
+  let itemsPerPage = 10;
+  let totalCount = 0;
+
   // Modal states
-  let showDetailModal = false
-  let selectedResult: StudentResult | null = null
-  let showDeleteModal = false
-  let resultToDelete: StudentResult | null = null
-  
+  let showDetailModal = false;
+  let selectedResult: StudentResult | null = null;
+  let showDeleteModal = false;
+  let resultToDelete: StudentResult | null = null;
+
   // Fetch data from API
   async function fetchResults() {
-    loading = true
-    error = null
-    
+    loading = true;
+    error = null;
+
     try {
-      console.log('📊 Fetching results from API...')
-      
+      console.log("📊 Fetching results from API...");
+
       // Build query parameters
       const params = new URLSearchParams({
-        limit: '1000', // Get all results for client-side filtering
-        offset: '0'
-      })
-      
-      const response = await fetch(`/api/admin/results?${params}`)
-      
+        limit: "1000", // Get all results for client-side filtering
+        offset: "0",
+      });
+
+      const response = await fetch(`/api/admin/results?${params}`);
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || `HTTP ${response.status}`)
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
-      
-      const data = await response.json()
-      
+
+      const data = await response.json();
+
       if (data.success) {
-        results = data.results || []
-        totalCount = data.total || results.length
-        console.log('✅ Fetched', results.length, 'results from API')
+        results = data.results || [];
+        totalCount = data.total || results.length;
+        console.log("✅ Fetched", results.length, "results from API");
       } else {
-        throw new Error(data.error || 'Failed to fetch results')
+        throw new Error(data.error || "Failed to fetch results");
       }
-      
     } catch (err) {
-      console.error('❌ Error fetching results:', err)
-      error = err instanceof Error ? err.message : 'Failed to fetch data'
-      results = []
+      console.error("❌ Error fetching results:", err);
+      error = err instanceof Error ? err.message : "Failed to fetch data";
+      results = [];
     } finally {
-      loading = false
+      loading = false;
     }
   }
-  
+
   // Delete result via API
   async function deleteResult(resultId: string) {
     try {
-      console.log('🗑️ Deleting result:', resultId)
-      
-      const response = await fetch('/api/admin/results', {
-        method: 'DELETE',
+      console.log("🗑️ Deleting result:", resultId);
+
+      const response = await fetch("/api/admin/results", {
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ resultId })
-      })
-      
+        body: JSON.stringify({ resultId }),
+      });
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || `HTTP ${response.status}`)
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
-      
-      const data = await response.json()
-      
+
+      const data = await response.json();
+
       if (data.success) {
-        console.log('✅ Result deleted successfully')
+        console.log("✅ Result deleted successfully");
         // Remove from local results array
-        results = results.filter(r => r.id !== resultId)
+        results = results.filter((r) => r.id !== resultId);
         // Refresh data to be sure
-        await fetchResults()
-        return true
+        await fetchResults();
+        return true;
       } else {
-        throw new Error(data.error || 'Failed to delete result')
+        throw new Error(data.error || "Failed to delete result");
       }
-      
     } catch (err) {
-      console.error('❌ Error deleting result:', err)
-      alert(`Gagal menghapus data: ${err instanceof Error ? err.message : 'Unknown error'}`)
-      return false
+      console.error("❌ Error deleting result:", err);
+      alert(
+        `Gagal menghapus data: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
+      return false;
     }
   }
-  
+
   // Load data on component mount
   onMount(() => {
-    fetchResults()
-  })
-  
+    fetchResults();
+  });
+
   // Get unique values for filters
-  $: uniqueLevels = [...new Set(results.map(r => r.level))].sort((a, b) => a - b)
-  $: uniqueClasses = [...new Set(results.map(r => r.student_class))].filter(Boolean).sort()
-  
+  $: uniqueLevels = [...new Set(results.map((r) => r.level))].sort(
+    (a, b) => a - b,
+  );
+  $: uniqueClasses = [...new Set(results.map((r) => r.student_class))]
+    .filter(Boolean)
+    .sort();
+
   // Filtered and sorted results
-  $: filteredResults = results.filter(result => {
-    const matchesSearch = searchTerm === '' || 
-      result.student_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      result.student_class?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      result.student_school?.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesLevel = selectedLevel === 'all' || result.level.toString() === selectedLevel
-    const matchesStatus = selectedStatus === 'all' || 
-      (selectedStatus === 'completed' && result.completion_date) ||
-      (selectedStatus === 'in_progress' && !result.completion_date)
-    const matchesClass = selectedClass === 'all' || result.student_class === selectedClass
-    
-    return matchesSearch && matchesLevel && matchesStatus && matchesClass
-  }).sort((a, b) => {
-    let aVal: any, bVal: any
-    
-    switch (sortBy) {
-      case 'student_name':
-        aVal = a.student_name || ''
-        bVal = b.student_name || ''
-        break
-      case 'student_class':
-        aVal = a.student_class || ''
-        bVal = b.student_class || ''
-        break
-      case 'score_percentage':
-        aVal = a.score_percentage || 0
-        bVal = b.score_percentage || 0
-        break
-      case 'completion_date':
-        aVal = a.completion_date ? new Date(a.completion_date).getTime() : 0
-        bVal = b.completion_date ? new Date(b.completion_date).getTime() : 0
-        break
-      case 'level':
-        aVal = a.level || 0
-        bVal = b.level || 0
-        break
-      default:
-        aVal = ''
-        bVal = ''
-    }
-    
-    if (sortOrder === 'asc') {
-      return aVal > bVal ? 1 : -1
-    } else {
-      return aVal < bVal ? 1 : -1
-    }
-  })
-  
+  $: filteredResults = results
+    .filter((result) => {
+      const matchesSearch =
+        searchTerm === "" ||
+        result.student_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        result.student_class
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        result.student_school?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesLevel =
+        selectedLevel === "all" || result.level.toString() === selectedLevel;
+      const matchesStatus =
+        selectedStatus === "all" ||
+        (selectedStatus === "completed" && result.completion_date) ||
+        (selectedStatus === "in_progress" && !result.completion_date);
+      const matchesClass =
+        selectedClass === "all" || result.student_class === selectedClass;
+
+      return matchesSearch && matchesLevel && matchesStatus && matchesClass;
+    })
+    .sort((a, b) => {
+      let aVal: any, bVal: any;
+
+      switch (sortBy) {
+        case "student_name":
+          aVal = a.student_name || "";
+          bVal = b.student_name || "";
+          break;
+        case "student_class":
+          aVal = a.student_class || "";
+          bVal = b.student_class || "";
+          break;
+        case "score_percentage":
+          aVal = a.score_percentage || 0;
+          bVal = b.score_percentage || 0;
+          break;
+        case "completion_date":
+          aVal = a.completion_date ? new Date(a.completion_date).getTime() : 0;
+          bVal = b.completion_date ? new Date(b.completion_date).getTime() : 0;
+          break;
+        case "level":
+          aVal = a.level || 0;
+          bVal = b.level || 0;
+          break;
+        default:
+          aVal = "";
+          bVal = "";
+      }
+
+      if (sortOrder === "asc") {
+        return aVal > bVal ? 1 : -1;
+      } else {
+        return aVal < bVal ? 1 : -1;
+      }
+    });
+
   // Paginated results
-  $: totalPages = Math.ceil(filteredResults.length / itemsPerPage)
+  $: totalPages = Math.ceil(filteredResults.length / itemsPerPage);
   $: paginatedResults = filteredResults.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
-  
+    currentPage * itemsPerPage,
+  );
+
   // Reset pagination when filters change
   $: if (searchTerm || selectedLevel || selectedStatus || selectedClass) {
-    currentPage = 1
+    currentPage = 1;
   }
-  
+
   function handleSort(column: SortableKeys) {
     if (sortBy === column) {
-      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'
+      sortOrder = sortOrder === "asc" ? "desc" : "asc";
     } else {
-      sortBy = column
-      sortOrder = 'desc'
+      sortBy = column;
+      sortOrder = "desc";
     }
   }
-  
+
   function handleExport() {
+    console.log("Export clicked, data:", filteredResults.length);
     if (filteredResults.length === 0) {
-      alert('Tidak ada data untuk diekspor')
-      return
+      alert("Tidak ada data untuk diekspor");
+      return;
     }
-    exportResultsToExcel(filteredResults)
+
+    try {
+      const filename = `quiz_results_${new Date().toISOString().split("T")[0]}.csv`;
+      exportResultsToExcel(filteredResults, filename);
+      console.log("Export berhasil");
+    } catch (error) {
+      console.error("Export error:", error);
+      alert("Gagal mengekspor: " + error);
+    }
   }
-  
+
+  // function handleExportDetailed() {
+  //   if (filteredResults.length === 0) {
+  //     alert("Tidak ada data untuk diekspor");
+  //     return;
+  //   }
+
+  //   try {
+  //     exportDetailedAnswers(filteredResults);
+  //   } catch (error) {
+  //     console.error("Export detailed error:", error);
+  //     alert("Gagal mengekspor data detail: " + error.message);
+  //   }
+  // }
+
   // Add refresh button functionality
   function handleRefresh() {
-    fetchResults()
+    fetchResults();
   }
-  
+
   function handleViewDetail(result: StudentResult) {
-    selectedResult = result
-    showDetailModal = true
+    selectedResult = result;
+    showDetailModal = true;
   }
-  
+
   function handleDeleteResult(result: StudentResult) {
-    resultToDelete = result
-    showDeleteModal = true
+    resultToDelete = result;
+    showDeleteModal = true;
   }
-  
+
   function confirmDelete() {
     if (resultToDelete) {
-      deleteResult(resultToDelete.id).then(success => {
+      deleteResult(resultToDelete.id).then((success) => {
         if (success) {
-          showDeleteModal = false
-          resultToDelete = null
+          showDeleteModal = false;
+          resultToDelete = null;
         }
-      })
+      });
     }
   }
-  
+
   function getScoreColor(score: number): string {
-    if (score >= 80) return 'excellent'
-    if (score >= 70) return 'good'
-    if (score >= 60) return 'average'
-    return 'poor'
+    if (score >= 80) return "excellent";
+    if (score >= 70) return "good";
+    if (score >= 60) return "average";
+    return "poor";
   }
-  
+
   function getLevelBadgeColor(level: number): string {
-    const colors = ['blue', 'green', 'purple', 'orange', 'red']
-    return colors[level % colors.length]
+    const colors = ["blue", "green", "purple", "orange", "red"];
+    return colors[level % colors.length];
   }
-  
+
   function formatLevel(level: number): string {
-    return `Level ${level}`
+    return `Level ${level}`;
   }
 </script>
 
@@ -253,24 +295,48 @@
     <div class="header-actions">
       <button on:click={handleRefresh} class="refresh-btn" disabled={loading}>
         <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
         </svg>
         Refresh
       </button>
-      <button on:click={handleExport} class="export-btn" disabled={filteredResults.length === 0}>
+      <button
+        on:click={handleExport}
+        class="export-btn"
+        disabled={filteredResults.length === 0}
+      >
         <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
         </svg>
         Export Excel
       </button>
     </div>
   </div>
-  
+
   <!-- Filters -->
   <div class="filters">
     <div class="search-box">
-      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      <svg
+        class="search-icon"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        />
       </svg>
       <input
         type="text"
@@ -279,27 +345,27 @@
         class="search-input"
       />
     </div>
-    
+
     <select bind:value={selectedLevel} class="filter-select">
       <option value="all">Semua Level</option>
       {#each uniqueLevels as level}
         <option value={level.toString()}>{formatLevel(level)}</option>
       {/each}
     </select>
-    
+
     <select bind:value={selectedStatus} class="filter-select">
       <option value="all">Semua Status</option>
       <option value="completed">Selesai</option>
       <option value="in_progress">In Progress</option>
     </select>
-    
+
     <select bind:value={selectedClass} class="filter-select">
       <option value="all">Semua Kelas</option>
       {#each uniqueClasses as studentClass}
         <option value={studentClass}>{studentClass}</option>
       {/each}
     </select>
-    
+
     <select bind:value={itemsPerPage} class="filter-select">
       <option value={10}>10 per halaman</option>
       <option value={25}>25 per halaman</option>
@@ -307,7 +373,7 @@
       <option value={100}>100 per halaman</option>
     </select>
   </div>
-  
+
   <!-- Table Container -->
   <div class="table-container">
     {#if loading}
@@ -317,22 +383,47 @@
       </div>
     {:else if error}
       <div class="error-state">
-        <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.498 0L4.316 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+        <svg
+          class="error-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.498 0L4.316 16.5c-.77.833.192 2.5 1.732 2.5z"
+          />
         </svg>
         <h3>Gagal memuat data</h3>
         <p>{error}</p>
         <button class="retry-btn" on:click={fetchResults}>
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
           Coba Lagi
         </button>
       </div>
     {:else if filteredResults.length === 0}
       <div class="empty-state">
-        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        <svg
+          class="empty-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
         </svg>
         <h3>Tidak ada hasil ditemukan</h3>
         <p>Coba ubah filter atau kata kunci pencarian</p>
@@ -342,28 +433,75 @@
         <table class="results-table">
           <thead>
             <tr>
-              <th class="sortable" class:active={sortBy === 'student_name'} on:click={() => handleSort('student_name')}>
+              <th
+                class="sortable"
+                class:active={sortBy === "student_name"}
+                on:click={() => handleSort("student_name")}
+              >
                 <div class="th-content">
                   Nama
-                  <svg class="sort-icon" class:desc={sortBy === 'student_name' && sortOrder === 'desc'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                  <svg
+                    class="sort-icon"
+                    class:desc={sortBy === "student_name" &&
+                      sortOrder === "desc"}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
                   </svg>
                 </div>
               </th>
-              <th class="sortable" class:active={sortBy === 'student_class'} on:click={() => handleSort('student_class')}>
+              <th
+                class="sortable"
+                class:active={sortBy === "student_class"}
+                on:click={() => handleSort("student_class")}
+              >
                 <div class="th-content">
                   Kelas
-                  <svg class="sort-icon" class:desc={sortBy === 'student_class' && sortOrder === 'desc'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                  <svg
+                    class="sort-icon"
+                    class:desc={sortBy === "student_class" &&
+                      sortOrder === "desc"}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
                   </svg>
                 </div>
               </th>
               <th>Sekolah</th>
-              <th class="sortable" class:active={sortBy === 'level'} on:click={() => handleSort('level')}>
+              <th
+                class="sortable"
+                class:active={sortBy === "level"}
+                on:click={() => handleSort("level")}
+              >
                 <div class="th-content">
                   Level
-                  <svg class="sort-icon" class:desc={sortBy === 'level' && sortOrder === 'desc'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                  <svg
+                    class="sort-icon"
+                    class:desc={sortBy === "level" && sortOrder === "desc"}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
                   </svg>
                 </div>
               </th>
@@ -376,11 +514,27 @@
                 </div>
               </th> -->
               <th>Status</th>
-              <th class="sortable" class:active={sortBy === 'completion_date'} on:click={() => handleSort('completion_date')}>
+              <th
+                class="sortable"
+                class:active={sortBy === "completion_date"}
+                on:click={() => handleSort("completion_date")}
+              >
                 <div class="th-content">
                   Tanggal Selesai
-                  <svg class="sort-icon" class:desc={sortBy === 'completion_date' && sortOrder === 'desc'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                  <svg
+                    class="sort-icon"
+                    class:desc={sortBy === "completion_date" &&
+                      sortOrder === "desc"}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
                   </svg>
                 </div>
               </th>
@@ -392,19 +546,25 @@
               <tr class="table-row">
                 <td class="student-info">
                   <div class="student-avatar">
-                    {result.student_name?.charAt(0) || 'S'}
+                    {result.student_name?.charAt(0) || "S"}
                   </div>
                   <div class="student-details">
-                    <div class="student-name">{result.student_name || 'N/A'}</div>
+                    <div class="student-name">
+                      {result.student_name || "N/A"}
+                    </div>
                     <div class="student-id">ID: {result.id}</div>
                   </div>
                 </td>
                 <td>
-                  <span class="class-badge">{result.student_class || 'N/A'}</span>
+                  <span class="class-badge"
+                    >{result.student_class || "N/A"}</span
+                  >
                 </td>
-                <td class="school-name">{result.student_school || 'N/A'}</td>
+                <td class="school-name">{result.student_school || "N/A"}</td>
                 <td>
-                  <span class="level-badge {getLevelBadgeColor(result.level)}">{formatLevel(result.level)}</span>
+                  <span class="level-badge {getLevelBadgeColor(result.level)}"
+                    >{formatLevel(result.level)}</span
+                  >
                 </td>
                 <!-- <td>
                   <div class="score-container">
@@ -417,32 +577,61 @@
                   </div>
                 </td> -->
                 <td>
-                  <span class="status-badge" class:completed={result.completion_date} class:in-progress={!result.completion_date}>
-                    {result.completion_date ? 'Selesai' : 'In Progress'}
+                  <span
+                    class="status-badge"
+                    class:completed={result.completion_date}
+                    class:in-progress={!result.completion_date}
+                  >
+                    {result.completion_date ? "Selesai" : "In Progress"}
                   </span>
                 </td>
                 <td class="completion-date">
-                  {result.completion_date ? formatDateTime(result.completion_date) : '-'}
+                  {result.completion_date
+                    ? formatDateTime(result.completion_date)
+                    : "-"}
                 </td>
                 <td class="actions">
                   <div class="action-buttons">
-                    <button 
-                      class="action-btn detail" 
+                    <button
+                      class="action-btn detail"
                       on:click={() => handleViewDetail(result)}
                       title="Lihat Detail"
                     >
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      <svg
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                       </svg>
                     </button>
-                    <button 
-                      class="action-btn delete" 
+                    <button
+                      class="action-btn delete"
                       on:click={() => handleDeleteResult(result)}
                       title="Hapus"
                     >
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      <svg
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -452,63 +641,86 @@
           </tbody>
         </table>
       </div>
-      
+
       <!-- Pagination -->
       {#if totalPages > 1}
         <div class="pagination">
           <div class="pagination-info">
-            Halaman {currentPage} dari {totalPages} 
-            ({(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredResults.length)} dari {filteredResults.length})
+            Halaman {currentPage} dari {totalPages}
+            ({(currentPage - 1) * itemsPerPage + 1}-{Math.min(
+              currentPage * itemsPerPage,
+              filteredResults.length,
+            )} dari {filteredResults.length})
           </div>
           <div class="pagination-controls">
-            <button 
-              class="pagination-btn" 
+            <button
+              class="pagination-btn"
               disabled={currentPage === 1}
-              on:click={() => currentPage = 1}
+              on:click={() => (currentPage = 1)}
             >
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+                />
               </svg>
             </button>
-            <button 
-              class="pagination-btn" 
+            <button
+              class="pagination-btn"
               disabled={currentPage === 1}
               on:click={() => currentPage--}
             >
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
-            
+
             {#each Array(Math.min(5, totalPages)) as _, i}
               {@const pageNum = currentPage <= 3 ? i + 1 : currentPage - 2 + i}
               {#if pageNum <= totalPages}
-                <button 
-                  class="pagination-btn page-number" 
+                <button
+                  class="pagination-btn page-number"
                   class:active={pageNum === currentPage}
-                  on:click={() => currentPage = pageNum}
+                  on:click={() => (currentPage = pageNum)}
                 >
                   {pageNum}
                 </button>
               {/if}
             {/each}
-            
-            <button 
-              class="pagination-btn" 
+
+            <button
+              class="pagination-btn"
               disabled={currentPage === totalPages}
               on:click={() => currentPage++}
             >
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </button>
-            <button 
-              class="pagination-btn" 
+            <button
+              class="pagination-btn"
               disabled={currentPage === totalPages}
-              on:click={() => currentPage = totalPages}
+              on:click={() => (currentPage = totalPages)}
             >
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                />
               </svg>
             </button>
           </div>
@@ -520,13 +732,18 @@
 
 <!-- Detail Modal -->
 {#if showDetailModal && selectedResult}
-  <div class="modal-overlay" on:click={() => showDetailModal = false}>
+  <div class="modal-overlay" on:click={() => (showDetailModal = false)}>
     <div class="modal-content" on:click|stopPropagation>
       <div class="modal-header">
         <h3>Detail Hasil Quiz</h3>
-        <button class="modal-close" on:click={() => showDetailModal = false}>
+        <button class="modal-close" on:click={() => (showDetailModal = false)}>
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -546,7 +763,9 @@
           </div>
           <div class="detail-item">
             <label>Level Quiz</label>
-            <span class="level-badge {getLevelBadgeColor(selectedResult.level)}">{formatLevel(selectedResult.level)}</span>
+            <span class="level-badge {getLevelBadgeColor(selectedResult.level)}"
+              >{formatLevel(selectedResult.level)}</span
+            >
           </div>
           <div class="detail-item">
             <label>Total Soal</label>
@@ -554,7 +773,8 @@
           </div>
           <div class="detail-item">
             <label>Jawaban Benar</label>
-            <span class="correct-answers">{selectedResult.correct_answers}</span>
+            <span class="correct-answers">{selectedResult.correct_answers}</span
+            >
           </div>
           <div class="detail-item">
             <label>Jawaban Salah</label>
@@ -562,16 +782,26 @@
           </div>
           <div class="detail-item">
             <label>Skor</label>
-            <span class="score {getScoreColor(selectedResult.score_percentage || 0)}">{selectedResult.score_percentage}%</span>
+            <span
+              class="score {getScoreColor(
+                selectedResult.score_percentage || 0,
+              )}">{selectedResult.score_percentage}%</span
+            >
           </div>
           <div class="detail-item">
             <label>Waktu Pengerjaan</label>
-            <span>{Math.floor((selectedResult.time_taken || 0) / 60)} menit {(selectedResult.time_taken || 0) % 60} detik</span>
+            <span
+              >{Math.floor((selectedResult.time_taken || 0) / 60)} menit {(selectedResult.time_taken ||
+                0) % 60} detik</span
+            >
           </div>
           <div class="detail-item">
             <label>Status</label>
-            <span class="status-badge" class:completed={selectedResult.completion_date}>
-              {selectedResult.completion_date ? 'Selesai' : 'In Progress'}
+            <span
+              class="status-badge"
+              class:completed={selectedResult.completion_date}
+            >
+              {selectedResult.completion_date ? "Selesai" : "In Progress"}
             </span>
           </div>
           <div class="detail-item">
@@ -580,7 +810,11 @@
           </div>
           <div class="detail-item">
             <label>Tanggal Selesai</label>
-            <span>{selectedResult.completion_date ? formatDateTime(selectedResult.completion_date) : 'Belum selesai'}</span>
+            <span
+              >{selectedResult.completion_date
+                ? formatDateTime(selectedResult.completion_date)
+                : "Belum selesai"}</span
+            >
           </div>
         </div>
       </div>
@@ -590,27 +824,37 @@
 
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && resultToDelete}
-  <div class="modal-overlay" on:click={() => showDeleteModal = false}>
+  <div class="modal-overlay" on:click={() => (showDeleteModal = false)}>
     <div class="modal-content small" on:click|stopPropagation>
       <div class="modal-header">
         <h3>Konfirmasi Hapus</h3>
-        <button class="modal-close" on:click={() => showDeleteModal = false}>
+        <button class="modal-close" on:click={() => (showDeleteModal = false)}>
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
       <div class="modal-body">
-        <p>Apakah Anda yakin ingin menghapus hasil quiz untuk <strong>{resultToDelete.student_name}</strong>?</p>
+        <p>
+          Apakah Anda yakin ingin menghapus hasil quiz untuk <strong
+            >{resultToDelete.student_name}</strong
+          >?
+        </p>
         <p class="warning">Tindakan ini tidak dapat dibatalkan.</p>
       </div>
       <div class="modal-footer">
-        <button class="btn secondary" on:click={() => showDeleteModal = false}>
+        <button
+          class="btn secondary"
+          on:click={() => (showDeleteModal = false)}
+        >
           Batal
         </button>
-        <button class="btn danger" on:click={confirmDelete}>
-          Hapus
-        </button>
+        <button class="btn danger" on:click={confirmDelete}> Hapus </button>
       </div>
     </div>
   </div>
@@ -957,11 +1201,26 @@
     font-weight: 500;
   }
 
-  .level-badge.blue { background: #dbeafe; color: #1e40af; }
-  .level-badge.green { background: #d1fae5; color: #065f46; }
-  .level-badge.purple { background: #ede9fe; color: #5b21b6; }
-  .level-badge.orange { background: #fed7aa; color: #9a3412; }
-  .level-badge.red { background: #fecaca; color: #991b1b; }
+  .level-badge.blue {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  .level-badge.green {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  .level-badge.purple {
+    background: #ede9fe;
+    color: #5b21b6;
+  }
+  .level-badge.orange {
+    background: #fed7aa;
+    color: #9a3412;
+  }
+  .level-badge.red {
+    background: #fecaca;
+    color: #991b1b;
+  }
 
   /* Score */
   .score-container {
@@ -976,10 +1235,18 @@
     min-width: 40px;
   }
 
-  .score.excellent { color: #059669; }
-  .score.good { color: #0369a1; }
-  .score.average { color: #d97706; }
-  .score.poor { color: #dc2626; }
+  .score.excellent {
+    color: #059669;
+  }
+  .score.good {
+    color: #0369a1;
+  }
+  .score.average {
+    color: #d97706;
+  }
+  .score.poor {
+    color: #dc2626;
+  }
 
   .score-bar {
     width: 60px;
@@ -995,10 +1262,18 @@
     transition: width 0.3s ease;
   }
 
-  .score-fill.excellent { background: #10b981; }
-  .score-fill.good { background: #3b82f6; }
-  .score-fill.average { background: #f59e0b; }
-  .score-fill.poor { background: #ef4444; }
+  .score-fill.excellent {
+    background: #10b981;
+  }
+  .score-fill.good {
+    background: #3b82f6;
+  }
+  .score-fill.average {
+    background: #f59e0b;
+  }
+  .score-fill.poor {
+    background: #ef4444;
+  }
 
   .status-badge {
     display: inline-block;
@@ -1231,9 +1506,16 @@
     font-weight: 500;
   }
 
-  .correct-answers { color: #059669; }
-  .wrong-answers { color: #dc2626; }
-  .token { font-family: monospace; font-size: 0.75rem; }
+  .correct-answers {
+    color: #059669;
+  }
+  .wrong-answers {
+    color: #dc2626;
+  }
+  .token {
+    font-family: monospace;
+    font-size: 0.75rem;
+  }
 
   .warning {
     color: #dc2626;
@@ -1279,7 +1561,9 @@
   }
 
   @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /* Responsive */

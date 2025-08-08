@@ -14,12 +14,24 @@ export class DatabaseQueries {
     return result.rows[0] as AdminUser || null
   }
 
-  // src/lib/database/queries.ts
-  static async getSessionById(sessionId: number): Promise<QuizSession | null> {
-    const query = `SELECT * FROM quiz_sessions WHERE id = $1`
-    const result = await db.query(query, [sessionId])
-    return result.rows[0] as QuizSession || null
-  }
+  // Add this method to DatabaseQueries class jika belum ada:
+
+static async getSessionById(sessionId: number): Promise<QuizSession | null> {
+  const query = `SELECT * FROM quiz_sessions WHERE id = $1`
+  const result = await db.query(query, [sessionId])
+  return result.rows[0] as QuizSession || null
+}
+
+// Also add this helper method if not exists:
+static async getAnswersBySession(sessionId: number): Promise<QuizAnswer[]> {
+  const query = `
+    SELECT * FROM quiz_answers 
+    WHERE session_id = $1 
+    ORDER BY answered_at ASC
+  `
+  const result = await db.query(query, [sessionId])
+  return result.rows as QuizAnswer[]
+}
 
 
 
@@ -290,15 +302,15 @@ export class DatabaseQueries {
     return result.rows[0] as QuizAnswer
   }
 
-  static async getAnswersBySession(sessionId: number): Promise<QuizAnswer[]> {
-    const query = `
-      SELECT * FROM quiz_answers 
-      WHERE session_id = $1 
-      ORDER BY answered_at ASC
-    `
-    const result = await db.query(query, [sessionId])
-    return result.rows as QuizAnswer[]
-  }
+  // static async getAnswersBySession(sessionId: number): Promise<QuizAnswer[]> {
+  //   const query = `
+  //     SELECT * FROM quiz_answers 
+  //     WHERE session_id = $1 
+  //     ORDER BY answered_at ASC
+  //   `
+  //   const result = await db.query(query, [sessionId])
+  //   return result.rows as QuizAnswer[]
+  // }
 
   // ===== TOKEN OPERATIONS - FIXED =====
   static async validateToken(tokenCode: string): Promise<Token | null> {
