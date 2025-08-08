@@ -57,6 +57,14 @@ export const POST: RequestHandler = async ({ request }) => {
     const wrong_answers = Number(agg.wrong_answers || 0)
     const total_score = Number(agg.total_score || correct_answers)
     const percentage = Number(agg.percentage || 0)
+    
+    // ✅ TAMBAHAN: Total soal yang tersedia dan completion rate
+    const total_available_questions = 27 // Total soal di quiz-data.json
+    const questions_answered = total_questions // Jumlah soal yang dijawab
+    const completion_rate = total_available_questions > 0 
+      ? Math.round((questions_answered / total_available_questions) * 100) 
+      : 0
+    
     // Normalisasi level agar konsisten dengan frontend (0-based di UI)
     const highest_level_reached = (
       agg.max_level_answered !== null && agg.max_level_answered !== undefined
@@ -77,7 +85,11 @@ export const POST: RequestHandler = async ({ request }) => {
       percentage,
       highest_level_reached,
       time_spent,
-      status
+      status,
+      // ✅ TAMBAHAN: Field baru untuk tracking completion
+      total_available_questions,
+      questions_answered,
+      completion_rate
     })
 
     // 5) Mark session completed if not already

@@ -624,9 +624,10 @@ static async getAnswersBySession(sessionId: number): Promise<QuizAnswer[]> {
     const query = `
       INSERT INTO quiz_results_summary (
         student_id, session_id, total_questions, correct_answers, wrong_answers,
-        total_score, percentage, highest_level_reached, time_spent, status
+        total_score, percentage, highest_level_reached, time_spent, status,
+        total_available_questions, questions_answered, completion_rate
       ) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) 
       RETURNING *
     `
     const result = await db.query(query, [
@@ -639,7 +640,10 @@ static async getAnswersBySession(sessionId: number): Promise<QuizAnswer[]> {
       resultData.percentage,
       resultData.highest_level_reached,
       resultData.time_spent,
-      resultData.status
+      resultData.status,
+      resultData.total_available_questions || 27,
+      resultData.questions_answered || resultData.total_questions,
+      resultData.completion_rate || 0
     ])
     
     console.log('✅ Quiz result summary created:', result.rows[0].id)

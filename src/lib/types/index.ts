@@ -128,6 +128,10 @@ export interface QuizResultSummary {
   status: 'completed' | 'stopped_wrong' | 'timeout'
   completed_at: string
   created_at: string
+  // ✅ TAMBAHAN: Field untuk tracking completion
+  total_available_questions?: number
+  questions_answered?: number
+  completion_rate?: number
 }
 
 export interface ResultSummaryData {
