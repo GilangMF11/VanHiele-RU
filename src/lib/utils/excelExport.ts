@@ -24,10 +24,11 @@
       'Total Soal',
       'Jawaban Benar',
       'Jawaban Salah',
-      'Skor (%)',
+      'Akurasi (%)',
       'Waktu (detik)',
       'Tanggal Selesai',
-      'Token'
+      'Token',
+      'Detail Jawaban (kode:status)'
     ];
   
     // Helper function to safely convert values to strings
@@ -36,19 +37,27 @@
       return value.toString();
     };
   
-    const rows = results.map(result => [
-      safeToString(result.student_name),
-      safeToString(result.student_class),
-      safeToString(result.student_school),
-      safeToString(result.level),
-      safeToString(result.total_questions),
-      safeToString(result.correct_answers),
-      safeToString(result.wrong_answers),
-      safeToString(result.score_percentage),
-      safeToString(result.time_taken),
-      result.completion_date ? new Date(result.completion_date).toLocaleString('id-ID') : '',
-      safeToString(result.session_token)
-    ]);
+    const rows = results.map(result => {
+      const detail = Array.isArray(result.answers) && result.answers.length > 0
+        ? result.answers
+            .map(a => `${a.question_id}:${a.is_correct ? 'Benar' : 'Salah'}`)
+            .join(' | ')
+        : ''
+      return [
+        safeToString(result.student_name),
+        safeToString(result.student_class),
+        safeToString(result.student_school),
+        safeToString(result.level),
+        safeToString(result.total_questions),
+        safeToString(result.correct_answers),
+        safeToString(result.wrong_answers),
+        safeToString(result.score_percentage),
+        safeToString(result.time_taken),
+        result.completion_date ? new Date(result.completion_date).toLocaleString('id-ID') : '',
+        safeToString(result.session_token),
+        detail
+      ]
+    });
   
     const csvContent = [headers, ...rows]
       .map(row => row.map(field => `"${field.replace(/"/g, '""')}"`).join(','))

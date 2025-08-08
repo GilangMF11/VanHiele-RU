@@ -1,7 +1,7 @@
 <!-- lib/components/admin/ResultsTable.svelte -->
 <script lang="ts">
   import { onMount } from "svelte";
-  import { exportResultsToExcel } from "$lib/utils/excelExport";
+  import { exportResultsToExcel, exportDetailedAnswers } from "$lib/utils/excelExport";
   import { formatDateTime } from "$lib/utils/dateFormatter";
   import type { StudentResult } from "$lib/types/admin";
 
@@ -49,11 +49,12 @@
 
       // Build query parameters
       const params = new URLSearchParams({
-        limit: "1000", // Get all results for client-side filtering
+        limit: "1000",
         offset: "0",
+        detailed: "1" // request with answers for export
       });
 
-      const response = await fetch(`/api/admin/results?${params}`);
+      const response = await fetch(`/api/admin/results?${params}`, { credentials: 'include' });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -88,6 +89,7 @@
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify({ resultId }),
       });
 
@@ -219,6 +221,8 @@
     try {
       const filename = `quiz_results_${new Date().toISOString().split("T")[0]}.csv`;
       exportResultsToExcel(filteredResults, filename);
+      // Juga export detail jawaban
+      exportDetailedAnswers(filteredResults);
       console.log("Export berhasil");
     } catch (error) {
       console.error("Export error:", error);

@@ -171,6 +171,17 @@
     try {
       const result = await QuizAPI.saveAnswer(answerData);
       if (result.success) {
+        // Ambil session_token dari server jika ada, simpan ke store userData dan ke answerData sebelum push ke store answers
+        const sessionToken = (result as any)?.data?.session_token || (result as any)?.data?.sessionToken;
+        if (sessionToken) {
+          if (!user.token || user.token.trim() === '') {
+            // update store agar komponen lain (ThankYouScreen) mendapat token
+            userData.set({ ...user, token: sessionToken });
+            user.token = sessionToken;
+          }
+          // pastikan answer yang disimpan ke store punya token
+          answerData.session_token = sessionToken;
+        }
         console.log("✅ Answer saved to database");
       } else {
         console.error("❌ Failed to save answer:", result.error);

@@ -1,11 +1,17 @@
 // src/routes/api/admin/token/+server.ts
 import { json, type RequestHandler } from '@sveltejs/kit'
 import { DatabaseQueries } from '$lib/database/queries.js'
+import { verifyJWT } from '$lib/utils/jwtUtils'
 import type { APIResponse, TokenData } from '$lib/types/index.js'
 
 // CREATE token
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
+    const adminSession = cookies.get('admin_session')
+    if (!adminSession) return json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    const adminUser = verifyJWT(adminSession)
+    if (!adminUser) return json({ success: false, error: 'Invalid session' }, { status: 401 })
+
     const tokenData = await request.json()
 
     if (!tokenData.max_usage || !tokenData.created_by) {
@@ -28,7 +34,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
 // READ token
 // GET /api/admin/token or /api/admin/token?token=XYZ
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, cookies }) => {
+    const adminSession = cookies.get('admin_session')
+    if (!adminSession) return json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    const adminUser = verifyJWT(adminSession)
+    if (!adminUser) return json({ success: false, error: 'Invalid session' }, { status: 401 })
+
     const token = url.searchParams.get('token')
   
     try {
@@ -71,7 +82,12 @@ export const GET: RequestHandler = async ({ url }) => {
 // }
 
 // DELETE token
-export const DELETE: RequestHandler = async ({ url }) => {
+export const DELETE: RequestHandler = async ({ url, cookies }) => {
+  const adminSession = cookies.get('admin_session')
+  if (!adminSession) return json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  const adminUser = verifyJWT(adminSession)
+  if (!adminUser) return json({ success: false, error: 'Invalid session' }, { status: 401 })
+
   const token = url.searchParams.get('token')
   if (!token) {
     return json({ success: false, error: 'Parameter token diperlukan untuk menghapus.' }, { status: 400 })

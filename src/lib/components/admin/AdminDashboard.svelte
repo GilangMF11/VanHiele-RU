@@ -9,7 +9,11 @@
   let refreshInterval: NodeJS.Timer
 
   // Chart data for analytics
-  let chartData = {
+  type DailyItem = { date: string; sessions: string; answers: string; avgScore: number }
+  type WeeklyItem = { week: string; sessions: string; answers: string }
+  type PerformanceItem = { level: string; totalQuestions: string; correctAnswers: string; avgScore: number; accuracy: number }
+
+  let chartData: { daily: DailyItem[]; weekly: WeeklyItem[]; performance: PerformanceItem[] } = {
     daily: [],
     weekly: [],
     performance: []
@@ -33,7 +37,7 @@
       loading = true
       error = ''
 
-      const response = await fetch('/api/admin/dashboard')
+      const response = await fetch('/api/admin/dashboard', { credentials: 'include' })
       const result = await response.json()
 
       if (response.ok) {
@@ -56,10 +60,10 @@
 
   async function loadChartData() {
     try {
-      const response = await fetch('/api/admin/analytics')
+      const response = await fetch('/api/admin/analytics', { credentials: 'include' })
       if (response.ok) {
         const result = await response.json()
-        chartData = result.data
+        chartData = result.data as { daily: DailyItem[]; weekly: WeeklyItem[]; performance: PerformanceItem[] }
         console.log('Chart data:', chartData)
       }
     } catch (err) {
@@ -189,10 +193,80 @@
   {:else if stats}
     <!-- Main Dashboard Content -->
     <div class="dashboard-content">
-      
-      
+      <!-- Analytics: Daily & Weekly -->
+      <div class="content-grid">
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">Trend Harian (7 hari)</h3>
+            <p class="card-description">Jumlah sesi, jawaban, dan rata-rata skor per hari</p>
+          </div>
+          {#if chartData?.daily?.length}
+            <div class="activity-list">
+              {#each chartData.daily as item}
+                <div class="activity-item">
+                  <div class="activity-content">
+                    <div class="activity-title">
+                      {new Date(item.date).toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                    </div>
+                    <div class="activity-description">
+                      Sesi: <strong>{item.sessions}</strong> • Jawaban: <strong>{item.answers}</strong> • Rata-rata Skor: <strong>{item.avgScore}%</strong>
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {:else}
+            <p>Tidak ada data harian.</p>
+          {/if}
+        </div>
 
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">Ringkasan Mingguan</h3>
+            <p class="card-description">Total sesi dan jawaban per minggu</p>
+          </div>
+          {#if chartData?.weekly?.length}
+            <div class="activity-list">
+              {#each chartData.weekly as item}
+                <div class="activity-item">
+                  <div class="activity-content">
+                    <div class="activity-title">Pekan {item.week}</div>
+                    <div class="activity-description">
+                      Sesi: <strong>{item.sessions}</strong> • Jawaban: <strong>{item.answers}</strong>
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {:else}
+            <p>Tidak ada data mingguan.</p>
+          {/if}
+        </div>
+      </div>
 
+      <!-- Analytics: Performance per Level -->
+      <div class="content-card" style="margin-top: 1.5rem;">
+        <div class="card-header">
+          <h3 class="card-title">Performa Tiap Level</h3>
+          <p class="card-description">Total pertanyaan, jawaban benar, akurasi dan rata-rata skor</p>
+        </div>
+        {#if chartData?.performance?.length}
+          <div class="activity-list">
+            {#each chartData.performance as item}
+              <div class="activity-item">
+                <div class="activity-content">
+                  <div class="activity-title">{item.level}</div>
+                  <div class="activity-description">
+                    Total: <strong>{item.totalQuestions}</strong> • Benar: <strong>{item.correctAnswers}</strong> • Akurasi: <strong>{item.accuracy}%</strong> • Rata-rata: <strong>{item.avgScore}%</strong>
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        {:else}
+          <p>Belum ada data performa.</p>
+        {/if}
+      </div>
 
       <!-- Real-time Component -->
      <!-- <RealtimeDashboard /> -->

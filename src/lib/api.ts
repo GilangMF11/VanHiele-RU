@@ -113,7 +113,8 @@ export class QuizAPI {
       const response = await fetch('/api/admin/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tokenData)
+        body: JSON.stringify(tokenData),
+        credentials: 'include'
       })
       const data: APIResponse = await response.json()
       return data
@@ -126,7 +127,7 @@ export class QuizAPI {
   // Get Token
   static async getToken(tokenId: string): Promise<APIResponse> {
     try {
-      const response = await fetch(`/api/admin/token?token=${encodeURIComponent(tokenId)}`)
+      const response = await fetch(`/api/admin/token?token=${encodeURIComponent(tokenId)}`, { credentials: 'include' })
       const data: APIResponse = await response.json()
       return data
     } catch (error) {
@@ -141,7 +142,8 @@ export class QuizAPI {
       const response = await fetch(`/api/admin/token?token=${encodeURIComponent(token)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tokenData)
+        body: JSON.stringify(tokenData),
+        credentials: 'include'
       })
       const data: APIResponse = await response.json()
       return data
@@ -156,7 +158,8 @@ export class QuizAPI {
   static async deleteToken(token: string): Promise<APIResponse> {
     try {
       const response = await fetch(`/api/admin/token?token=${encodeURIComponent(token)}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       })
       const data: APIResponse = await response.json()
       return data

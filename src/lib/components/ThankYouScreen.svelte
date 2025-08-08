@@ -114,17 +114,9 @@
 
       console.log("✅ Using session token:", user.token);
 
-      // ✅ CALL COMPLETE-QUIZ API FOR FINAL SUMMARY
+      // ✅ CALL COMPLETE-QUIZ API FOR FINAL SUMMARY (server akan hitung dari quiz_answers)
       const requestBody = {
-        student_id: 19,
-        session_id: 60,
-        total_questions: 27,
-        correct_answers: 1,
-        wrong_answers: 3,
-        total_score: 10,
-        percentage: 10,
-        highest_level_reached: 1,
-        time_spent: 90,
+        session_token: user.token,
         status: "completed",
       };
 
@@ -145,7 +137,7 @@
         if (result.success) {
           if (result.duplicate) {
             console.log("ℹ️ Summary already existed, no duplicate created");
-          } else {
+          } else if (result.summary) {
             console.log("🎊 NEW final summary created:", {
               id: result.summary.id,
               score: result.summary.percentage,
@@ -153,8 +145,6 @@
               level_reached: result.summary.highest_level_reached,
             });
           }
-
-          console.log("📊 Final statistics:", result.statistics);
         } else {
           console.warn("⚠️ API returned success=false:", result);
         }

@@ -68,9 +68,9 @@ export const GET: RequestHandler = async ({ cookies }) => {
       const stats = daily.rows
   
       return stats.map(stat => ({
-        date: stat.date,
-        sessions: stat.sessions,
-        answers: stat.total_answers,
+        date: new Date(stat.date).toISOString(),
+        sessions: String(stat.sessions),
+        answers: String(stat.total_answers),
         avgScore: Math.round(stat.avg_score)
       }))
     } catch (error) {
@@ -97,8 +97,8 @@ export const GET: RequestHandler = async ({ cookies }) => {
   
       return stats.map(stat => ({
         week: stat.week,
-        sessions: stat.sessions,
-        answers: stat.total_answers
+        sessions: String(stat.sessions),
+        answers: String(stat.total_answers)
       }))
     } catch (error) {
       console.error('Error getting weekly stats:', error)
@@ -126,8 +126,8 @@ export const GET: RequestHandler = async ({ cookies }) => {
   
       return stats.map(stat => ({
         level: `Level ${stat.level}`,
-        totalQuestions: stat.total_questions,
-        correctAnswers: stat.correct_answers,
+        totalQuestions: String(stat.total_questions),
+        correctAnswers: String(stat.correct_answers),
         avgScore: Math.round(stat.avg_score),
         accuracy: Math.round((stat.correct_answers / stat.total_questions) * 100)
       }))
