@@ -2,7 +2,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit'
 import { DatabaseQueries } from '$lib/database/queries.js'
 import { verifyJWT } from '$lib/utils/jwtUtils'
-import type { APIResponse, TokenData } from '$lib/types/index.js'
+import type { APIResponse, TokenData, Token } from '$lib/types/index.js'
 
 // CREATE token
 export const POST: RequestHandler = async ({ request, cookies }) => {
@@ -63,23 +63,27 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
   
 
 // UPDATE token
-// export const PATCH: RequestHandler = async ({ request, url }) => {
-//   const token = url.searchParams.get('token')
-//   if (!token) {
-//     return json({ success: false, error: 'Parameter token diperlukan untuk update.' }, { status: 400 })
-//   }
+export const PATCH: RequestHandler = async ({ request, url, cookies }) => {
+  const adminSession = cookies.get('admin_session')
+  if (!adminSession) return json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  const adminUser = verifyJWT(adminSession)
+  if (!adminUser) return json({ success: false, error: 'Invalid session' }, { status: 401 })
 
-//   try {
-//     const tokenData: Partial<TokenData> = await request.json()
+  const token = url.searchParams.get('token')
+  if (!token) {
+    return json({ success: false, error: 'Parameter token diperlukan untuk update.' }, { status: 400 })
+  }
 
-//     // Pastikan kamu punya method updateTokenByValue di queries
-//     const updatedToken = await DatabaseQueries.updateTokenByValue(token.toUpperCase(), tokenData)
-//     return json({ success: true, data: updatedToken })
-//   } catch (error) {
-//     console.error('❌ Error updating token:', error)
-//     return json({ success: false, error: (error as Error).message }, { status: 500 })
-//   }
-// }
+  try {
+    const tokenData: Partial<Token> = await request.json()
+
+    const updatedToken = await DatabaseQueries.updateTokenByValue(token.toUpperCase(), tokenData)
+    return json({ success: true, data: updatedToken })
+  } catch (error) {
+    console.error('❌ Error updating token:', error)
+    return json({ success: false, error: (error as Error).message }, { status: 500 })
+  }
+}
 
 // DELETE token
 export const DELETE: RequestHandler = async ({ url, cookies }) => {

@@ -50,14 +50,20 @@ export interface Student {
   }
   
   export interface TokenData {
-    id: string
-    token: string
-    description: string
-    is_active: boolean
-    created_date: string
-    usage_count: number
-    max_usage?: number
-  }
+  id: string
+  token_code: string
+  token_name: string
+  description?: string // Alias untuk token_name
+  is_active: boolean
+  created_at: string
+  created_date?: string // Alias untuk created_at
+  usage_count: number
+  max_usage?: number
+  expires_at?: string
+  created_by?: number
+  updated_at?: string
+  created_by_name?: string
+}
 
 export interface QuizSession {
   id: number
