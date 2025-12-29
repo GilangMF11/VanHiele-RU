@@ -1,7 +1,7 @@
 <!-- lib/components/admin/ResultsTable.svelte -->
 <script lang="ts">
   import { onMount } from "svelte";
-  import { exportResultsToExcel, exportDetailedAnswers } from "$lib/utils/excelExport";
+  import { exportResultsToExcel, exportDetailedAnswers, exportDetailedAnswersNew } from "$lib/utils/excelExport";
   import { formatDateTime } from "$lib/utils/dateFormatter";
   import type { StudentResult } from "$lib/types/admin";
 
@@ -221,12 +221,42 @@
     try {
       const filename = `quiz_results_${new Date().toISOString().split("T")[0]}.csv`;
       exportResultsToExcel(filteredResults, filename);
-      // Juga export detail jawaban
-      exportDetailedAnswers(filteredResults);
       console.log("Export berhasil");
     } catch (error) {
       console.error("Export error:", error);
       alert("Gagal mengekspor: " + error);
+    }
+  }
+
+  function handleExportDetailed() {
+    if (filteredResults.length === 0) {
+      alert("Tidak ada data untuk diekspor");
+      return;
+    }
+
+    try {
+      exportDetailedAnswers(filteredResults);
+      console.log("Export detail berhasil");
+    } catch (error) {
+      console.error("Export detailed error:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      alert("Gagal mengekspor data detail: " + errorMessage);
+    }
+  }
+
+  function handleExportDetailedNew() {
+    if (filteredResults.length === 0) {
+      alert("Tidak ada data untuk diekspor");
+      return;
+    }
+
+    try {
+      exportDetailedAnswersNew(filteredResults);
+      console.log("Export detail format baru berhasil");
+    } catch (error) {
+      console.error("Export detailed new error:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      alert("Gagal mengekspor data detail format baru: " + errorMessage);
     }
   }
 
@@ -322,6 +352,36 @@
           />
         </svg>
         Export Excel
+      </button>
+      <button
+        on:click={handleExportDetailed}
+        class="export-btn secondary"
+        disabled={filteredResults.length === 0}
+      >
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+        Export Detail
+      </button>
+      <button
+        on:click={handleExportDetailedNew}
+        class="export-btn secondary"
+        disabled={filteredResults.length === 0}
+      >
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+        Export Detail Baru
       </button>
     </div>
   </div>
@@ -919,6 +979,11 @@
 
   .export-btn {
     background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+  }
+
+  .export-btn.secondary {
+    background: linear-gradient(135deg, #64748b, #475569);
     color: white;
   }
 

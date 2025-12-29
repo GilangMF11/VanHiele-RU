@@ -66,40 +66,48 @@
     return csvContent;
   }
   
-  // For detailed answers export
+  // For detailed answers export - MODIFIED VERSION
   export function exportDetailedAnswers(results: StudentResult[]) {
     const headers = [
       'Nama Siswa',
-      'Kelas',
+      'Kelas', 
       'Sekolah',
       'Level',
-      'ID Soal',
-      'Pertanyaan',
-      'Jawaban Siswa',
+      'Token Session',
+      'Tanggal Selesai',
+      'Total Soal',
       'Jawaban Benar',
-      'Status',
-      'Waktu Jawab'
+      'Jawaban Salah',
+      'Akurasi (%)',
+      'Waktu (detik)',
+      'Kode Soal',
+      'Status Jawaban'
     ]
-  
+
     const rows = results.flatMap(result => 
-      result.answers.map(answer => [
-        result.student_name,
-        result.student_class,
-        result.student_school,
-        answer.level.toString(),
+      result.answers.map((answer, index) => [
+        // Data siswa (hanya tampil di baris pertama)
+        index === 0 ? result.student_name : '',
+        index === 0 ? result.student_class : '',
+        index === 0 ? result.student_school : '',
+        index === 0 ? answer.level.toString() : '',
+        index === 0 ? result.session_token : '',
+        index === 0 ? (result.completion_date ? new Date(result.completion_date).toLocaleString('id-ID') : '') : '',
+        index === 0 ? result.total_questions.toString() : '',
+        index === 0 ? result.correct_answers.toString() : '',
+        index === 0 ? result.wrong_answers.toString() : '',
+        index === 0 ? result.score_percentage.toString() : '',
+        index === 0 ? result.time_taken.toString() : '',
+        // Data soal per baris
         answer.question_id,
-        answer.question_text,
-        answer.selected_answer,
-        answer.correct_answer,
-        answer.is_correct ? 'Benar' : 'Salah',
-        //new Date(answer.timestamp.toString()).toLocaleString('id-ID')
+        answer.is_correct ? 'Benar' : 'Salah'
       ])
     )
-  
+
     const csvContent = [headers, ...rows]
       .map(row => row.map(field => `"${field}"`).join(','))
       .join('\n')
-  
+
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
@@ -110,3 +118,125 @@
     link.click()
     document.body.removeChild(link)
   }
+
+// Alternative compact format for detailed answers export
+export function exportDetailedAnswersCompact(results: StudentResult[]) {
+  const headers = [
+    'Nama Siswa',
+    'Kelas', 
+    'Sekolah',
+    'Level',
+    'Token Session',
+    'Tanggal Selesai',
+    'Total Soal',
+    'Jawaban Benar',
+    'Jawaban Salah',
+    'Akurasi (%)',
+    'Waktu (detik)',
+    'Kode Soal',
+    'Status Jawaban'
+  ]
+
+  const rows = results.flatMap(result => {
+    // Baris pertama dengan data lengkap siswa
+    const firstRow = [
+      result.student_name,
+      result.student_class,
+      result.student_school,
+      result.level.toString(),
+      result.session_token,
+      result.completion_date ? new Date(result.completion_date).toLocaleString('id-ID') : '',
+      result.total_questions.toString(),
+      result.correct_answers.toString(),
+      result.wrong_answers.toString(),
+      result.score_percentage.toString(),
+      result.time_taken.toString(),
+      '', // Kode soal kosong untuk baris header siswa
+      ''  // Status kosong untuk baris header siswa
+    ]
+
+    // Baris-baris untuk setiap soal
+    const answerRows = result.answers.map(answer => [
+      '', // Nama kosong
+      '', // Kelas kosong
+      '', // Sekolah kosong
+      '', // Level kosong
+      '', // Token kosong
+      '', // Tanggal kosong
+      '', // Total soal kosong
+      '', // Jawaban benar kosong
+      '', // Jawaban salah kosong
+      '', // Akurasi kosong
+      '', // Waktu kosong
+      answer.question_id,
+      answer.is_correct ? 'Benar' : 'Salah'
+    ])
+
+    return [firstRow, ...answerRows]
+  })
+
+  const csvContent = [headers, ...rows]
+    .map(row => row.map(field => `"${field}"`).join(','))
+    .join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', `quiz_detailed_answers_compact_${new Date().toISOString().split('T')[0]}.csv`)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
+// New format: One row per question with student info and question status
+export function exportDetailedAnswersNew(results: StudentResult[]) {
+  const headers = [
+    'Nama Siswa',
+    'Kelas', 
+    'Sekolah',
+    'Level',
+    'Token Session',
+    'Tanggal Selesai',
+    'Total Soal',
+    'Jawaban Benar',
+    'Jawaban Salah',
+    'Akurasi (%)',
+    'Waktu (detik)',
+    'Kode Soal',
+    'Status Jawaban'
+  ]
+
+  const rows = results.flatMap(result => 
+    result.answers.map(answer => [
+      result.student_name,
+      result.student_class,
+      result.student_school,
+      result.level.toString(),
+      result.session_token,
+      result.completion_date ? new Date(result.completion_date).toLocaleString('id-ID') : '',
+      result.total_questions.toString(),
+      result.correct_answers.toString(),
+      result.wrong_answers.toString(),
+      result.score_percentage.toString(),
+      result.time_taken.toString(),
+      answer.question_id,
+      answer.is_correct ? 'Benar' : 'Salah'
+    ])
+  )
+
+  const csvContent = [headers, ...rows]
+    .map(row => row.map(field => `"${field}"`).join(','))
+    .join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', `quiz_detailed_answers_new_${new Date().toISOString().split('T')[0]}.csv`)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}

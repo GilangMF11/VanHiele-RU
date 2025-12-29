@@ -16,8 +16,8 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
       user_data 
     } = answerData
 
-    // Validate input
-    if (!question_id || !question_text || !selected_answer || !correct_answer || !user_data) {
+    // Validate input - Allow empty question_text if question has image
+    if (!question_id || !selected_answer || !correct_answer || !user_data) {
       const errorResponse: APIResponse = { 
         success: false, 
         error: 'Data jawaban tidak lengkap' 
@@ -25,9 +25,14 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
       return json(errorResponse, { status: 400 })
     }
 
+    // If question_text is empty, provide a default text
+    const finalQuestionText = question_text || `Soal ${question_id} (berdasarkan gambar)`;
+
     console.log('📝 Processing answer:', {
       level,
       question_id,
+      question_text: question_text || '(empty)',
+      finalQuestionText,
       selected_answer,
       correct_answer,
       is_correct,
@@ -118,7 +123,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
       session_id: session.id,
       level: level,
       question_id: question_id,
-      question_text: question_text,
+      question_text: finalQuestionText,
       selected_answer: selected_answer,
       correct_answer: correct_answer,
       is_correct: is_correct,

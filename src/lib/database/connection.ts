@@ -1,6 +1,10 @@
 // src/lib/database/connection.ts - FIXED VERSION
 import { Pool, type PoolConfig, type QueryResult } from 'pg'
 import { dev } from '$app/environment'
+import dotenv from 'dotenv'
+
+// Load environment variables from .env file
+dotenv.config()
 
 // Fallback configuration jika DATABASE_URL tidak ada
 const config: PoolConfig = process.env.DATABASE_URL 
@@ -14,7 +18,7 @@ const config: PoolConfig = process.env.DATABASE_URL
   : {
       user: process.env.DB_USER || 'postgres',
       host: process.env.DB_HOST || 'localhost',
-      database: process.env.DB_NAME || 'ump_quiz_system',
+      database: process.env.DB_NAME || 'ump_quiz',
       password: process.env.DB_PASSWORD || '123456',
       port: parseInt(process.env.DB_PORT || '5432'),
       ssl: false,
